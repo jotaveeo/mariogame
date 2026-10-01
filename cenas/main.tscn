@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://b41aw5535jp00"]
+
+[ext_resource type="Texture2D" uid="uid://8as4lix1a8pr" path="res://Assets Super Mario Bros/Sprites/HardBlock.png" id="1_5wwvk"]
+[ext_resource type="Texture2D" uid="uid://bh2i2pbd72n30" path="res://Assets Super Mario Bros/Sprites/GroundBlock.png" id="2_bhvw8"]
+[ext_resource type="Texture2D" uid="uid://dbhkvad8kmca" path="res://Assets Super Mario Bros/Sprites/UndergroundBlock.png" id="3_l8342"]
+[ext_resource type="Texture2D" uid="uid://dtkrgfs1x5qrr" path="res://Assets Super Mario Bros/Sprites/UndergroundBrick.png" id="4_v1d1r"]
+[ext_resource type="PackedScene" uid="uid://ddwfev8ykg3lj" path="res://cenas/player.tscn" id="5_1yycb"]
+[ext_resource type="Script" uid="uid://c2aq7dwdh0scm" path="res://cenas/player.gd" id="6_bhvw8"]
+[ext_resource type="PackedScene" uid="uid://dp8dkucnjuh5s" path="res://cenas/goomba.tscn" id="7_v1d1r"]
+[ext_resource type="PackedScene" uid="uid://d0f0rqh3poh55" path="res://cenas/koopa.tscn" id="8_1yycb"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5vw27"]
+texture = ExtResource("1_5wwvk")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kek77"]
+texture = ExtResource("2_bhvw8")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4c57u"]
+texture = ExtResource("3_l8342")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_efxa6"]
+texture = ExtResource("4_v1d1r")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSet" id="TileSet_mvld4"]
+physics_layer_0/collision_layer = 2
+sources/0 = SubResource("TileSetAtlasSource_5vw27")
+sources/1 = SubResource("TileSetAtlasSource_kek77")
+sources/2 = SubResource("TileSetAtlasSource_4c57u")
+sources/3 = SubResource("TileSetAtlasSource_efxa6")
+
+[node name="main" type="Node" unique_id=181525184]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1925158553]
+zoom = Vector2(2.75, 2.75)
+
+[node name="TileMap" type="TileMap" parent="." unique_id=599562369]
+position = Vector2(2, 21)
+tile_set = SubResource("TileSet_mvld4")
+format = 2
+layer_0/tile_data = PackedInt32Array(262130, 1, 0, 262131, 1, 0, 262132, 1, 0, 262133, 1, 0, 262134, 1, 0, 262135, 1, 0, 262136, 1, 0, 327673, 1, 0, 327674, 1, 0, 327675, 1, 0, 327676, 1, 0, 327677, 1, 0, 327678, 1, 0, 327679, 1, 0, 196608, 1, 0, 196609, 1, 0, 196610, 1, 0, 196611, 1, 0, 196612, 1, 0, 196613, 1, 0, 196614, 1, 0, 196615, 1, 0, 262143, 1, 0, 262142, 1, 0, 262141, 1, 0, 262140, 1, 0, 262139, 1, 0, 262138, 1, 0, 262137, 1, 0, 327670, 1, 0, 327669, 1, 0, 327668, 1, 0, 327667, 1, 0, 327666, 1, 0, 327671, 1, 0, 327672, 1, 0, 262144, 1, 0, 262145, 1, 0, 262146, 1, 0, 262147, 1, 0, 262148, 1, 0, 262149, 1, 0, 262150, 1, 0, 262151, 1, 0, 262152, 1, 0, 262153, 1, 0, 262154, 1, 0, 262155, 1, 0, 262156, 1, 0, 262157, 1, 0, 196621, 1, 0, 196620, 1, 0, 196619, 1, 0, 196618, 1, 0, 196617, 1, 0, 196616, 1, 0, 393202, 1, 0, 458738, 1, 0, 524274, 1, 0, 524275, 1, 0, 524276, 1, 0, 458741, 1, 0, 458742, 1, 0, 458743, 1, 0, 458744, 1, 0, 458745, 1, 0, 524281, 1, 0, 524280, 1, 0, 524279, 1, 0, 524278, 1, 0, 524277, 1, 0, 458740, 1, 0, 393204, 1, 0, 393203, 1, 0, 458739, 1, 0, 393205, 1, 0, 393206, 1, 0, 393207, 1, 0, 393208, 1, 0, 393209, 1, 0, 393210, 1, 0, 393211, 1, 0, 393212, 1, 0, 393213, 1, 0, 393214, 1, 0, 393215, 1, 0, 327680, 1, 0, 327681, 1, 0, 327682, 1, 0, 327683, 1, 0, 327684, 1, 0, 327685, 1, 0, 327686, 1, 0, 327687, 1, 0, 327688, 1, 0, 327689, 1, 0, 327690, 1, 0, 327691, 1, 0, 327692, 1, 0, 327693, 1, 0, 393229, 1, 0, 458765, 1, 0, 458764, 1, 0, 458763, 1, 0, 458762, 1, 0, 458761, 1, 0, 458760, 1, 0, 458759, 1, 0, 458758, 1, 0, 458757, 1, 0, 458756, 1, 0, 458755, 1, 0, 458754, 1, 0, 458753, 1, 0, 458752, 1, 0, 524287, 1, 0, 524286, 1, 0, 524285, 1, 0, 524284, 1, 0, 524283, 1, 0, 524282, 1, 0, 458746, 1, 0, 458747, 1, 0, 458748, 1, 0, 458749, 1, 0, 458750, 1, 0, 458751, 1, 0, 393216, 1, 0, 393217, 1, 0, 393218, 1, 0, 393219, 1, 0, 393220, 1, 0, 393221, 1, 0, 393222, 1, 0, 393223, 1, 0, 393224, 1, 0, 393225, 1, 0, 393226, 1, 0, 393227, 1, 0, 393228, 1, 0)
+
+[node name="player" parent="." unique_id=1186385412 instance=ExtResource("5_1yycb")]
+position = Vector2(-178, 53)
+script = ExtResource("6_bhvw8")
+
+[node name="enemies" type="Node" parent="." unique_id=1957750048]
+
+[node name="Goomba" parent="enemies" unique_id=557080585 instance=ExtResource("7_v1d1r")]
+position = Vector2(36, 61)
+horizontal_speed = null
+vertical_speed = null
+
+[node name="Koopa" parent="enemies" unique_id=34466557 instance=ExtResource("8_1yycb")]
+position = Vector2(-48, 57)

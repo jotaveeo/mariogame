@@ -1,0 +1,292 @@
+[gd_scene format=3 uid="uid://ddwfev8ykg3lj"]
+
+[ext_resource type="Texture2D" uid="uid://d3jwm15et3t22" path="res://Assets Super Mario Bros/Sprites/Mario_Small_Idle.png" id="1_8or6t"]
+[ext_resource type="Texture2D" uid="uid://ct8uqpacoxaq1" path="res://Assets Super Mario Bros/Sprites/Mario_Big_Idle.png" id="1_821w2"]
+[ext_resource type="Script" uid="uid://c2aq7dwdh0scm" path="res://cenas/player.gd" id="1_ldhcr"]
+[ext_resource type="Texture2D" uid="uid://c3njnoy5owfh3" path="res://Assets Super Mario Bros/Sprites/Mario_Big_Jump.png" id="2_ldhcr"]
+[ext_resource type="Shape2D" uid="uid://dggn04ikoja28" path="res://resources/CollisionShapes/new_rectangle_shape_2d.tres" id="2_unwft"]
+[ext_resource type="Texture2D" uid="uid://crqgheu7ndoxs" path="res://Assets Super Mario Bros/Sprites/Mario_Big_Pole.png" id="3_i3yeh"]
+[ext_resource type="Texture2D" uid="uid://dvnr77h30cjn6" path="res://Assets Super Mario Bros/Sprites/Mario_Big_Run1.png" id="4_gqqv0"]
+[ext_resource type="Texture2D" uid="uid://biwgmc04ug3tt" path="res://Assets Super Mario Bros/Sprites/Mario_Big_Run2.png" id="5_qwrs5"]
+[ext_resource type="Texture2D" uid="uid://cxxi757iq1gnv" path="res://Assets Super Mario Bros/Sprites/Mario_Big_Run3.png" id="6_rmatm"]
+[ext_resource type="Texture2D" uid="uid://k303fjvwyalc" path="res://Assets Super Mario Bros/Sprites/Mario_Big_Slide.png" id="7_4coxd"]
+[ext_resource type="Texture2D" uid="uid://4axg8se7m40x" path="res://Assets Super Mario Bros/Sprites/Mario_Shooting_Idle.png" id="8_yrlys"]
+[ext_resource type="Texture2D" uid="uid://d3i8ain3y4vfj" path="res://Assets Super Mario Bros/Sprites/Mario_Shooting_Jump.png" id="9_0qyyh"]
+[ext_resource type="Texture2D" uid="uid://cwns46e1wprcc" path="res://Assets Super Mario Bros/Sprites/Mario_Shooting_Pole.png" id="10_3kkam"]
+[ext_resource type="Texture2D" uid="uid://bsfrxav8x3dot" path="res://Assets Super Mario Bros/Sprites/Mario_Shooting_Run1.png" id="11_iqemb"]
+[ext_resource type="Texture2D" uid="uid://cipjmquw1tlrv" path="res://Assets Super Mario Bros/Sprites/Mario_Shooting_Run2.png" id="12_of225"]
+[ext_resource type="Texture2D" uid="uid://daqnle02fss6v" path="res://Assets Super Mario Bros/Sprites/Mario_Shooting_Run3.png" id="13_8vo43"]
+[ext_resource type="Texture2D" uid="uid://1w6lqgnlyqo2" path="res://Assets Super Mario Bros/Sprites/Mario_Shooting-Slide.png" id="14_o3f53"]
+[ext_resource type="Texture2D" uid="uid://bausni6inywyv" path="res://Assets Super Mario Bros/Sprites/Mario_Small_Death.png" id="15_iyxja"]
+[ext_resource type="Texture2D" uid="uid://ugx1dv5u8m74" path="res://Assets Super Mario Bros/Sprites/Mario-Shooting.png" id="16_mario_shoot"]
+[ext_resource type="Texture2D" uid="uid://bqfjqbv1vr2oq" path="res://Assets Super Mario Bros/Sprites/Mario_Small_Jump.png" id="17_5e3xa"]
+[ext_resource type="Texture2D" uid="uid://ckd7ka2h150dt" path="res://Assets Super Mario Bros/Sprites/Mario_Small_Pole.png" id="18_ulfow"]
+[ext_resource type="Texture2D" uid="uid://b7pkrn5h1n5lm" path="res://Assets Super Mario Bros/Sprites/Mario_Small_Run1.png" id="19_ddxaq"]
+[ext_resource type="Texture2D" uid="uid://dlhg7nbxeials" path="res://Assets Super Mario Bros/Sprites/Mario_Small_Run2.png" id="20_h2dhk"]
+[ext_resource type="Texture2D" uid="uid://d01eopk6c4cx1" path="res://Assets Super Mario Bros/Sprites/Mario_Small_Run3.png" id="21_86jcb"]
+[ext_resource type="Texture2D" uid="uid://cal7r48xqmfrt" path="res://Assets Super Mario Bros/Sprites/Mario_Small_Slide.png" id="22_r0lco"]
+[ext_resource type="Script" uid="uid://uubi006ahpyr" path="res://cenas/animated_sprite_2d.gd" id="23_lxc2q"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_mvld4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_821w2")
+}],
+"loop": 1,
+"name": &"big_idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_ldhcr")
+}],
+"loop": 1,
+"name": &"big_jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_i3yeh")
+}],
+"loop": 1,
+"name": &"big_pole",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_gqqv0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_qwrs5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_rmatm")
+}],
+"loop": 1,
+"name": &"big_run",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_4coxd")
+}],
+"loop": 1,
+"name": &"big_slide",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_821w2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_yrlys")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_821w2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_yrlys")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_821w2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_yrlys")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_821w2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_yrlys")
+}],
+"loop": 0,
+"name": &"big_to_shooting",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("16_mario_shoot")
+}],
+"loop": 0,
+"name": &"shooting",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_yrlys")
+}],
+"loop": 0,
+"name": &"shooting_idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_0qyyh")
+}],
+"loop": 1,
+"name": &"shooting_jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_3kkam")
+}],
+"loop": 1,
+"name": &"shooting_pole",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_iqemb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_of225")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_8vo43")
+}],
+"loop": 1,
+"name": &"shooting_run",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_o3f53")
+}],
+"loop": 1,
+"name": &"shooting_slide",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("15_iyxja")
+}],
+"loop": 1,
+"name": &"small_death",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_8or6t")
+}],
+"loop": 1,
+"name": &"small_idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_5e3xa")
+}],
+"loop": 1,
+"name": &"small_jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("18_ulfow")
+}],
+"loop": 1,
+"name": &"small_pole",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("19_ddxaq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_h2dhk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_86jcb")
+}],
+"loop": 1,
+"name": &"small_run",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("22_r0lco")
+}],
+"loop": 1,
+"name": &"small_slide",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_8or6t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_821w2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_8or6t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_821w2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_8or6t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_821w2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_8or6t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_821w2")
+}],
+"loop": 0,
+"name": &"small_to_big",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_8or6t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_yrlys")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_8or6t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_yrlys")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_8or6t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_yrlys")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_8or6t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_yrlys")
+}],
+"loop": 0,
+"name": &"small_to_shooting",
+"speed": 5.0
+}]
+
+[node name="player" type="CharacterBody2D" unique_id=1186385412]
+collision_mask = 6
+script = ExtResource("1_ldhcr")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=800612279]
+sprite_frames = SubResource("SpriteFrames_mvld4")
+animation = &"small_death"
+script = ExtResource("23_lxc2q")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=743683077]
+collision_mask = 6
+
+[node name="AreaCollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=2070957152]
+shape = ExtResource("2_unwft")
+
+[node name="BodyCollisionShape2D" type="CollisionShape2D" parent="." unique_id=2046613436]
+shape = ExtResource("2_unwft")
+
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

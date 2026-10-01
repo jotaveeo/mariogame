@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://d0f0rqh3poh55"]
+
+[ext_resource type="Script" uid="uid://cyyxed3yhkn75" path="res://cenas/koopa.gd" id="1_6aqqr"]
+[ext_resource type="Texture2D" uid="uid://d0n6srd2hrk0i" path="res://Assets Super Mario Bros/Sprites/Koopa_Shell.png" id="2_atskh"]
+[ext_resource type="Texture2D" uid="uid://rq2r08kewwlo" path="res://Assets Super Mario Bros/Sprites/Koopa_Walk1.png" id="3_cruq6"]
+[ext_resource type="Texture2D" uid="uid://b2q1ddi7o0ef" path="res://Assets Super Mario Bros/Sprites/Koopa_Walk2.png" id="4_81vfs"]
+[ext_resource type="Shape2D" uid="uid://dhfpw13bksb3t" path="res://resources/CollisionShapes/koopa_full.tres" id="5_atskh"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_mvld4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_atskh")
+}],
+"loop": 1,
+"name": &"dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_cruq6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_81vfs")
+}],
+"loop": 1,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[node name="Koopa" type="Area2D" unique_id=34466557]
+collision_layer = 3
+collision_mask = 9
+script = ExtResource("1_6aqqr")
+horizontal_speed = null
+vertical_speed = null
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1952064202]
+sprite_frames = SubResource("SpriteFrames_mvld4")
+animation = &"walk"
+autoplay = "walk"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=442600975]
+shape = ExtResource("5_atskh")
+
+[node name="RayCast2D" type="RayCast2D" parent="." unique_id=1699116568]
+target_position = Vector2(0, 12)
+collision_mask = 18
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=1901267184]
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
