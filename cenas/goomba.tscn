@@ -30,9 +30,9 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q6hli"]
 size = Vector2(16, 16)
 
-[node name="Goomba" type="Area2D" unique_id=557080585]
-collision_layer = 3
-collision_mask = 9
+[node name="Goomba" type="CharacterBody2D" unique_id=557080585]
+collision_layer = 4
+collision_mask = 2
 script = ExtResource("1_pkweq")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=361698551]
@@ -44,10 +44,14 @@ autoplay = "walk"
 shape = SubResource("RectangleShape2D_q6hli")
 
 [node name="RayCast2D" type="RayCast2D" parent="." unique_id=257426418]
-target_position = Vector2(0, 8)
-collision_mask = 18
+target_position = Vector2(0, 24)
+collision_mask = 2
 
-[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=1967421788]
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 4
 
-[connection signal="area_entered" from="." to="." method="_on_area_entered"]
-[connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("RectangleShape2D_q6hli")
+
+[connection signal="area_entered" from="Hitbox" to="." method="_on_hitbox_area_entered"]

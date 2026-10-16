@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://cenas/coin.gd" id="1_rhi4h"]
+[ext_resource type="Texture2D" path="res://Assets Super Mario Bros/Sprites/Coin1.png" id="2_03m6f"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cgkfa"]
+radius = 6.0
+
+[node name="Coin" type="Area2D" unique_id=566367379]
+collision_layer = 32
+script = ExtResource("1_rhi4h")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1330133912]
+texture = ExtResource("2_03m6f")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=161349062]
+shape = SubResource("CircleShape2D_cgkfa")

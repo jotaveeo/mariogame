@@ -28,12 +28,10 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Koopa" type="Area2D" unique_id=34466557]
-collision_layer = 3
-collision_mask = 9
+[node name="Koopa" type="CharacterBody2D" unique_id=34466557]
+collision_layer = 4
+collision_mask = 2
 script = ExtResource("1_6aqqr")
-horizontal_speed = null
-vertical_speed = null
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1952064202]
 sprite_frames = SubResource("SpriteFrames_mvld4")
@@ -44,10 +42,14 @@ autoplay = "walk"
 shape = ExtResource("5_atskh")
 
 [node name="RayCast2D" type="RayCast2D" parent="." unique_id=1699116568]
-target_position = Vector2(0, 12)
-collision_mask = 18
+target_position = Vector2(0, 24)
+collision_mask = 2
 
-[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=1901267184]
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 4
 
-[connection signal="area_entered" from="." to="." method="_on_area_entered"]
-[connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = ExtResource("5_atskh")
+
+[connection signal="area_entered" from="Hitbox" to="." method="_on_hitbox_area_entered"]

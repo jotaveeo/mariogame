@@ -1,54 +1,62 @@
-extends Area2D
-
 class_name Enemy
+extends CharacterBody2D
 
-const POINTS_LABEL_SCENE = preload("res://cenas/points_label.tscn")
+signal points_awarded(points: int, location: Vector2)
 
-@export var horizontal_speed = 20
-@export var vertical_speed = 100
+@export var horizontal_speed: float = 20.0
+@export var gravity: float = 980.0
+@export var avoid_ledges: bool = true
 
-@onready var ray_cast_2d = $RayCast2D as RayCast2D
-@onready var animated_sprite_2d = $AnimatedSprite2D as AnimatedSprite2D
+var is_dead: bool = false
 
-func _process(delta):
-	var hs = horizontal_speed if horizontal_speed != null else 20.0
-	var vs = vertical_speed if vertical_speed != null else 100.0
-	position.x -= hs * delta
+@onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
+@onready var ledge_ray: RayCast2D = $RayCast2D
+@onready var hitbox: Area2D = $Hitbox
 
-	if !ray_cast_2d.is_colliding():
-		position.y += vs * delta
+func _physics_process(delta: float) -> void:
+	if is_dead:
+		return
+	if horizontal_speed != 0:
+		ledge_ray.position.x = -signf(horizontal_speed) * 14.0
+		ledge_ray.force_raycast_update()
+		if is_on_wall() or (avoid_ledges and is_on_floor() and not ledge_ray.is_colliding()):
+			horizontal_speed *= -1
+	velocity.x = -horizontal_speed
+	if not is_on_floor():
+		velocity.y += gravity * delta
+	move_and_slide()
+	if global_position.y > 400:
+		queue_free()
 
-func die():
+func die() -> void:
 	horizontal_speed = 0
-	vertical_speed = 0
 	animated_sprite_2d.play("dead")
-	# Goomba: achatar e sumir depois
-	if "Goomba" in get_class():
-		animated_sprite_2d.scale.y = 0.3
-		get_tree().create_timer(0.5).timeout.connect(queue_free)
 
-func die_from_hit():
-	set_collision_layer_value(3, false)
-	set_collision_mask_value(3, false)
+func disable_interactions() -> void:
+	is_dead = true
+	velocity = Vector2.ZERO
+	set_deferred("collision_layer", 0)
+	set_deferred("collision_mask", 0)
+	hitbox.set_deferred("collision_layer", 0)
+	hitbox.set_deferred("collision_mask", 0)
+	hitbox.set_deferred("monitoring", false)
+	hitbox.set_deferred("monitorable", false)
 
+func die_from_hit() -> void:
+	if is_dead:
+		return
+	disable_interactions()
+	points_awarded.emit(100, global_position)
 	rotation_degrees = 180
+	var die_tween = create_tween()
+	die_tween.tween_property(self, "position", position + Vector2(0, -25), 0.2)
+	die_tween.tween_property(self, "position", position + Vector2(0, 500), 0.4)
+	die_tween.tween_callback(queue_free)
 
-	horizontal_speed = 0
-	vertical_speed = 0
-
-	var die_tween = get_tree().create_tween()
-	die_tween.tween_property(self, "position", position + Vector2(0, -25), .2)
-	die_tween.chain().tween_property(self, "position", position + Vector2(0, 500), .4)
-	
-	var points_label = POINTS_LABEL_SCENE.instantiate()
-	points_label.position = self.position + Vector2(-20, -20)
-	get_tree().root.add_child(points_label)
-	
-	die_tween.finished.connect(queue_free)
-	
-func _on_area_entered(area):
-	if area.get("in_a_shell") == true and area.get("horizontal_speed") != 0:
+func _on_hitbox_area_entered(area: Area2D) -> void:
+	var other = area.get_parent()
+	if other is Enemy and not other.is_dead and other.is_moving_shell():
 		die_from_hit()
 
-func _on_visible_on_screen_notifier_2d_screen_exited():
-	queue_free()
+func is_moving_shell() -> bool:
+	return false

@@ -272,12 +272,13 @@ animations = [{
 }]
 
 [node name="player" type="CharacterBody2D" unique_id=1186385412]
-collision_mask = 6
+collision_mask = 2
 script = ExtResource("1_ldhcr")
+metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=800612279]
 sprite_frames = SubResource("SpriteFrames_mvld4")
-animation = &"small_death"
+animation = &"small_idle"
 script = ExtResource("23_lxc2q")
 
 [node name="Area2D" type="Area2D" parent="." unique_id=743683077]

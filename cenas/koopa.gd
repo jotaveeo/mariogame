@@ -1,38 +1,31 @@
+class_name Koopa
 extends Enemy
 
-class_name Koopa
-
-const KOOPA_FULL_SHAPE = preload("res://resources/CollisionShapes/koopa_full.tres")
 const KOOPA_SHELL_SHAPE = preload("res://resources/CollisionShapes/koopa_shell.tres")
 const KOOPA_SHELL_POSITION = Vector2(0, 5)
-@onready var collision_shape_2d = $CollisionShape2D
-@export var slide_speed = 200
-var in_a_shell = false
 
-func _ready():
-	collision_shape_2d.shape = KOOPA_FULL_SHAPE
+@export var slide_speed: float = 200.0
 
-func die():
-	if !in_a_shell:
-		super.die()
+var in_a_shell: bool = false
 
-	collision_shape_2d.set_deferred("shape", KOOPA_SHELL_SHAPE)
-	collision_shape_2d.set_deferred("position", KOOPA_SHELL_POSITION)
+func die() -> void:
+	if in_a_shell or is_dead:
+		return
+	super.die()
+	$CollisionShape2D.set_deferred("shape", KOOPA_SHELL_SHAPE)
+	$CollisionShape2D.set_deferred("position", KOOPA_SHELL_POSITION)
+	$Hitbox/CollisionShape2D.set_deferred("shape", KOOPA_SHELL_SHAPE)
+	$Hitbox/CollisionShape2D.set_deferred("position", KOOPA_SHELL_POSITION)
 	in_a_shell = true
 
-func on_stomp(player_position: Vector2):
-	set_collision_layer_value(3, false)
-	set_collision_mask_value(1, false)
-	set_collision_layer_value(4, true)
-
+func on_stomp(player_position: Vector2) -> void:
 	var movement_direction = 1 if player_position.x <= global_position.x else -1
 	horizontal_speed = -movement_direction * slide_speed
+	avoid_ledges = false
 
-#func die():
-	#super.die()
-	#set_collision_layer_value(3, false)
-	#set_collision_mask_value(1, false)
-	#get_tree().create_timer(0.5).timeout.connect(queue_free)
-#
-#func _on_visible_on_screen_notifier_2d_screen_entered() -> void:
-	#pass # Replace with function body.
+func stop_shell() -> void:
+	horizontal_speed = 0
+	velocity.x = 0
+
+func is_moving_shell() -> bool:
+	return in_a_shell and horizontal_speed != 0

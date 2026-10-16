@@ -1,15 +1,10 @@
+class_name PlayerAnimatedSprite
 extends AnimatedSprite2D
 
-class_name PlayerAnimatedSprite
+func trigger_animation(velocity: Vector2, direction: int, player_mode: Player.PlayerMode, on_floor: bool) -> void:
+	var animation_prefix = Player.PlayerMode.keys()[player_mode].to_snake_case()
 
-func trigger_animation(velocity: Vector2, direction: int, player_mode: player.PlayerMode):
-	var animation_prefix = player.PlayerMode.keys()[player_mode].to_snake_case()
-
-	# Se está morto, tocar animação de morte e não interferir
-	if animation == "small_death":
-		return
-
-	if not get_parent().is_on_floor():
+	if not on_floor:
 		play("%s_jump" % animation_prefix)
 
 	elif sign(velocity.x) != sign(direction) && velocity.x != 0 && direction != 0:
