@@ -1,17 +1,29 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://chf07j6qoiqip"]
 
-[ext_resource type="Script" path="res://cenas/coin.gd" id="1_rhi4h"]
-[ext_resource type="Texture2D" path="res://Assets Super Mario Bros/Sprites/Coin1.png" id="2_03m6f"]
+[ext_resource type="Script" uid="uid://ckpfl2tkiguea" path="res://cenas/coin.gd" id="1_rhi4h"]
+[ext_resource type="Texture2D" uid="uid://d7iqe7ort45q" path="res://Assets Super Mario Bros/Sprites/Coin1.png" id="2_03m6f"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_cgkfa"]
 radius = 6.0
 
+[sub_resource type="Animation" id="Animation_rhi4h"]
+resource_name = "coin"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_03m6f"]
+_data = {
+&"coin": SubResource("Animation_rhi4h")
+}
+
 [node name="Coin" type="Area2D" unique_id=566367379]
 collision_layer = 32
 script = ExtResource("1_rhi4h")
+metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1330133912]
 texture = ExtResource("2_03m6f")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=161349062]
 shape = SubResource("CircleShape2D_cgkfa")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=166051559]
+libraries/ = SubResource("AnimationLibrary_03m6f")

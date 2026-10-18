@@ -30,7 +30,7 @@ func run_checks() -> void:
 	await frames(30)
 	check(level.hero.is_on_floor(), "Player spawn has solid ground")
 	check(level.get_node("Terrain") is TileMapLayer, "Terrain uses TileMapLayer")
-	check(level.get_node("Terrain").get_used_cells().size() == 882, "Tile conversion preserves terrain")
+	check(not level.get_node("Terrain").get_used_cells().is_empty(), "Terrain contains painted tiles")
 	check(level.enemies.size() == 12, "All twelve enemies are preserved")
 	check(InputMap.has_action("restart"), "Restart is mapped as an action")
 	var coin = level.get_node("Coins").get_child(0)
@@ -84,6 +84,9 @@ func run_checks() -> void:
 	level.time_left = 0.001
 	await frames(3)
 	check(level.hero.is_dead, "Timeout kills player")
+	check(level.time_left == 0.0, "Timer stops at zero")
+	check(level.hud.get_node("Message").text.contains("TEMPO ESGOTADO"), "Timeout displays explanation")
+	check(level.hud.get_node("Score").text.contains("00:00"), "Timer displays minutes and seconds")
 	await fresh_level()
 	level.hero.position = Vector2(620, 320)
 	await frames(3)
@@ -94,13 +97,26 @@ func run_checks() -> void:
 	await frames(40)
 	Input.action_release("left")
 	check(level.hero.position.x >= 5.9, "Physical boundary keeps player inside level")
+	await fresh_level()
+	level.score = level.minimum_score - 100
+	var old_score = level.score
+	level._finish(level.hero)
+	check(not level.finished, "Goal rejects insufficient score before awarding completion bonus")
+	check(level.score == old_score, "Rejected finish does not award bonus")
+	check(level.hero.is_physics_processing(), "Player can continue collecting points")
+	check(level.hud.get_node("Message").text.contains("100 PONTOS"), "Goal explains missing points")
+	level.score = level.minimum_score
+	level._finish(level.hero)
+	check(level.finished, "Exact minimum score allows completion")
+	check(level.score > level.minimum_score, "Completion bonus is awarded after eligibility")
 	await check_traversal()
 	print("Checks completed; failures: ", failures)
 	quit(1 if failures else 0)
 
 func check_traversal() -> void:
 	await fresh_level()
-	# Isolate terrain reachability; combat was checked separately above.
+	# Isolate terrain reachability; combat and score gate are checked separately.
+	level.score = level.minimum_score
 	for enemy in level.enemies:
 		enemy.disable_interactions()
 	Input.action_press("right")

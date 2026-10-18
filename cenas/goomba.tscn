@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://dp8dkucnjuh5s"]
 
 [ext_resource type="Script" uid="uid://c1esffslcfoso" path="res://cenas/goomba.gd" id="1_pkweq"]
-[ext_resource type="Texture2D" uid="uid://dl0kuv8e1o6n3" path="res://Assets Super Mario Bros/Sprites/Goomba_Flat.png" id="2_u1okf"]
-[ext_resource type="Texture2D" uid="uid://dhmodocnsu7ds" path="res://Assets Super Mario Bros/Sprites/Goomba_Walk1.png" id="3_vk5u8"]
-[ext_resource type="Texture2D" uid="uid://cxtty1fuwy5ab" path="res://Assets Super Mario Bros/Sprites/Goomba_Walk2.png" id="4_45pp7"]
+[ext_resource type="Texture2D" uid="uid://780i1007c68c" path="res://Assets Super Mario Bros/Sprites/Goomba_Flat.png" id="2_u1okf"]
+[ext_resource type="Texture2D" uid="uid://fsaw58edarl2" path="res://Assets Super Mario Bros/Sprites/Goomba_Walk1.png" id="3_vk5u8"]
+[ext_resource type="Texture2D" uid="uid://3ygo2af4hg4j" path="res://Assets Super Mario Bros/Sprites/Goomba_Walk2.png" id="4_45pp7"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_mvld4"]
 animations = [{
@@ -34,6 +34,7 @@ size = Vector2(16, 16)
 collision_layer = 4
 collision_mask = 2
 script = ExtResource("1_pkweq")
+metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=361698551]
 sprite_frames = SubResource("SpriteFrames_mvld4")
@@ -47,11 +48,11 @@ shape = SubResource("RectangleShape2D_q6hli")
 target_position = Vector2(0, 24)
 collision_mask = 2
 
-[node name="Hitbox" type="Area2D" parent="."]
+[node name="Hitbox" type="Area2D" parent="." unique_id=736629786]
 collision_layer = 4
 collision_mask = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=915451757]
 shape = SubResource("RectangleShape2D_q6hli")
 
 [connection signal="area_entered" from="Hitbox" to="." method="_on_hitbox_area_entered"]

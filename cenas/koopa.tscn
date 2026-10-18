@@ -32,6 +32,7 @@ animations = [{
 collision_layer = 4
 collision_mask = 2
 script = ExtResource("1_6aqqr")
+metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1952064202]
 sprite_frames = SubResource("SpriteFrames_mvld4")
@@ -45,11 +46,11 @@ shape = ExtResource("5_atskh")
 target_position = Vector2(0, 24)
 collision_mask = 2
 
-[node name="Hitbox" type="Area2D" parent="."]
+[node name="Hitbox" type="Area2D" parent="." unique_id=1858203989]
 collision_layer = 4
 collision_mask = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1629433104]
 shape = ExtResource("5_atskh")
 
 [connection signal="area_entered" from="Hitbox" to="." method="_on_hitbox_area_entered"]
