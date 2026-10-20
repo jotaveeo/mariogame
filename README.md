@@ -4,6 +4,7 @@ Projeto de plataforma para Godot 4.7. Abra `project.godot` e pressione F5.
 
 - Setas esquerda/direita: mover.
 - Seta para cima: pular; soltar antes reduz a altura.
+- Espaço: lançar fireball quando Mario estiver com poder de fogo.
 - R: reiniciar (ação `restart` no InputMap).
 
 ## Editar a fase
@@ -16,6 +17,24 @@ Duplique instâncias em `Coins` e `Enemies` para adicionar moedas e inimigos.
 Mantenha cada entidade dentro do respectivo nó: a fase conecta seus sinais em
 `_ready()`. Edite `coin.tscn`, `goomba.tscn` ou `koopa.tscn` para mudar todas as
 instâncias. A interface está em `hud.tscn`.
+
+## Blocos de recompensa
+
+No seletor de tiles do `Terrain`, escolha um dos três sources do bloco
+misterioso no TileSet: source 11 entrega moeda, source 12 entrega cogumelo e
+source 13 entrega flor de fogo. Pinte cada source na posição desejada; cada tile
+pintado é uma recompensa individual. O source 14 é o bloco vazio que substitui
+o bloco após ser cabeceado. Os sources usam o custom data `reward` do TileSet
+para registrar a recompensa.
+
+Os blocos só ativam quando Mario os acerta por baixo. A moeda usa `Coin2.png`,
+vale 200 pontos e incrementa o contador de moedas. O cogumelo transforma Mario
+em adulto; a flor ativa o poder de fogo. Um dano reduz fogo para adulto e
+adulto para pequeno antes de matar Mario. Com o poder de fogo, pressione Espaço
+para lançar fireballs que ricocheteiam no chão e eliminam inimigos.
+
+A animação do bloco usa `MysteryBlock.png`, `MysteryBox1.png` e
+`MysterBox2.png` em loop.
 
 `Finish/Goal` define a área de chegada. Ao mudar o tamanho do mapa, ajuste
 `level_width`, as paredes em `Boundaries` e a chegada. `time_limit`,
@@ -30,6 +49,10 @@ instâncias. A interface está em `hud.tscn`.
   terreno. `Hitbox` é uma Area2D para contato com jogador e outros inimigos.
 - `koopa.gd`: transformação, chute, parada do casco e orientação do sprite ao
   inverter a direção.
+- `mystery_block_manager.gd`: ativação dos blocos por cabeçada e entrega das
+  recompensas configuradas no TileSet.
+- `power_up.gd` e `fireball.gd`: surgimento, física, coleta de poderes e
+  projéteis do Mario com poder de fogo.
 - `coin.gd`: coleta única e sinal `collected`; `coin.tscn` anima seis imagens
   em loop, com um ciclo de aproximadamente um segundo.
 - `hud.gd`: apresentação dos valores e da conclusão.
@@ -50,8 +73,9 @@ godot --headless --fixed-fps 60 --path . --script res://tests/level_checks.gd
 ```
 
 O teste verifica colisão inicial, instâncias reutilizáveis, animação e coleta
-de moedas, câmera e recuo, pisão, orientação do Koopa, chute/parada/dano do
-casco, casco atingindo inimigo, queda, tempo esgotado e limites físicos. Também
+de moedas, variantes dos blocos misteriosos e suas recompensas, poderes, dano,
+fireball, câmera e recuo, pisão, orientação do Koopa, chute/parada/dano do casco,
+casco atingindo inimigo, queda, tempo esgotado e limites físicos. Também
 percorre a fase até a chegada com controles simulados, desativando inimigos
 somente nesse teste para isolar a geometria.
 

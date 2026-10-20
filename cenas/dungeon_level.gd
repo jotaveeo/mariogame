@@ -46,6 +46,11 @@ func _ready() -> void:
 		enemy.points_awarded.connect(_award_points)
 	for coin in $Coins.get_children():
 		coin.collected.connect(_collect_coin)
+	var mystery_block_manager = MysteryBlockManager.new()
+	mystery_block_manager.name = "MysteryBlockManager"
+	add_child(mystery_block_manager)
+	mystery_block_manager.coin_collected.connect(_collect_coin)
+	mystery_block_manager.setup(terrain, hero)
 	_update_hud()
 
 func _unhandled_input(event: InputEvent) -> void:

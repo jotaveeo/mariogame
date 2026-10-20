@@ -40,14 +40,75 @@ func run_checks() -> void:
 	check(coin_sprite.sprite_frames.get_animation_speed("default") == 6.0 and coin_sprite.sprite_frames.get_animation_loop("default") and coin_sprite.autoplay == "default" and coin_sprite.is_playing(), "Coin animation loops automatically once per second")
 	check(level.hud.scene_file_path == "res://cenas/hud.tscn", "HUD uses a reusable scene")
 	check(level.hero.minimum_x == level.camera_progress_x - level.camera_half_width + 14.0, "Camera recoil margin is fourteen pixels")
+	var terrain: TileMapLayer = level.get_node("Terrain")
+	var tile_set: TileSet = terrain.tile_set
+	var coin_block_source = tile_set.get_source(11) as TileSetAtlasSource
+	var mushroom_block_source = tile_set.get_source(12) as TileSetAtlasSource
+	var flower_block_source = tile_set.get_source(13) as TileSetAtlasSource
+	check(coin_block_source.get_tile_data(Vector2i.ZERO, 0).get_custom_data("reward") == "coin", "Mystery block source 11 gives a coin")
+	check(mushroom_block_source.get_tile_data(Vector2i.ZERO, 0).get_custom_data("reward") == "mushroom", "Mystery block source 12 gives a mushroom")
+	check(flower_block_source.get_tile_data(Vector2i.ZERO, 0).get_custom_data("reward") == "flower", "Mystery block source 13 gives a flower")
+	var mystery_scene = load("res://cenas/mystery_block.tscn").instantiate()
+	var mystery_frames: SpriteFrames = mystery_scene.get_node("AnimatedSprite2D").sprite_frames
+	check(mystery_frames.get_frame_count("default") == 3 and mystery_frames.get_animation_loop("default") and mystery_scene.get_node("AnimatedSprite2D").autoplay == "default", "Mystery block animation uses three looping autoplay frames")
+	check(mystery_frames.get_frame_texture("default", 2).resource_path.ends_with("MysterBox2.png"), "Mystery block animation ends with MysterBox2.png")
+	mystery_scene.free()
+	var mystery_manager = level.get_node("MysteryBlockManager") as MysteryBlockManager
+	var original_hero_position = level.hero.global_position
+	var original_camera_progress = level.camera_progress_x
+	var test_block_cell = Vector2i(-5, -5)
+	terrain.set_cell(test_block_cell, 13, Vector2i.ZERO)
+	mystery_manager.register_cell(test_block_cell)
+	level.hero.mystery_block_hit.emit(terrain, test_block_cell)
+	check(mystery_manager.blocks[test_block_cell].used, "Player head contact activates an unused mystery block")
+	await frames(12)
+	check(terrain.get_cell_source_id(test_block_cell) == 14, "Used mystery block changes to EmptyBlock")
+	var flower = mystery_manager.get_node("PowerUp") as PowerUp
+	flower._on_pickup_area_body_entered(level.hero)
+	check(level.hero.player_mode == Player.PlayerMode.SHOOTING, "Flower reward activates shooting form")
+	level.hero.animated_sprite_2d.scale.x = -1.0
+	level.hero._shoot_fireball()
+	var fireball = level.get_node("Fireball")
+	check(fireball.direction == -1.0, "Fireball launches in Mario's facing direction")
+	check(fireball.get_node("AnimatedSprite2D").sprite_frames.get_frame_count("default") == 3, "Fireball animates with three frames")
 	level.camera_progress_x = 500.0
 	level.camera.global_position.x = level.camera_progress_x
 	level.hero.global_position.x = 100.0
 	level._physics_process(0.0)
 	check(level.camera_progress_x == 500.0, "Main camera does not move back into explored scenery")
+	level.camera_progress_x = original_camera_progress
+	level.camera.global_position.x = original_camera_progress
+	level.hero.global_position = original_hero_position
+	level.hero.minimum_x = original_camera_progress - level.camera_half_width + 14.0
+	level.hero.take_damage()
+	check(level.hero.player_mode == Player.PlayerMode.BIG and not level.hero.is_dead, "First damage removes fire power without killing Mario")
+	level.hero.damage_invulnerability = 0.0
+	level.hero.take_damage()
+	check(level.hero.player_mode == Player.PlayerMode.SMALL and not level.hero.is_dead, "Second damage returns Mario to small form")
+	fireball.queue_free()
+	var mushroom_cell = Vector2i(-7, -5)
+	terrain.set_cell(mushroom_cell, 12, Vector2i.ZERO)
+	mystery_manager.register_cell(mushroom_cell)
+	level.hero.mystery_block_hit.emit(terrain, mushroom_cell)
+	await frames(12)
+	var mushroom = mystery_manager.get_node("PowerUp") as PowerUp
+	check(mushroom.get_node("Sprite2D").texture.resource_path.ends_with("MagicMushroom.png"), "Mushroom reward uses MagicMushroom.png")
+	mushroom._on_pickup_area_body_entered(level.hero)
+	check(level.hero.player_mode == Player.PlayerMode.BIG and (level.hero.body_collision_shape.shape as RectangleShape2D).size.y == 24.0, "Mushroom activates adult form and enlarges the collision shape")
+	level.hero.damage_invulnerability = 0.0
+	level.hero.take_damage()
+	check(level.hero.player_mode == Player.PlayerMode.SMALL, "Damage removes the mushroom power")
 	coin._on_body_entered(level.hero)
 	coin._on_body_entered(level.hero)
 	check(level.coins == 1 and level.score == 200, "Coin awards points only once")
+	var test_coin_cell = Vector2i(-6, -5)
+	terrain.set_cell(test_coin_cell, 11, Vector2i.ZERO)
+	mystery_manager.register_cell(test_coin_cell)
+	level.hero.mystery_block_hit.emit(terrain, test_coin_cell)
+	await frames(12)
+	check(level.coins == 2 and level.score == 400, "Mystery block coin awards 200 points and increments the coin count")
+	var coin_popup = mystery_manager.get_node("CoinPopup")
+	check(coin_popup.get_node("Sprite2D").texture.resource_path.ends_with("Coin2.png"), "Mystery block coin uses Coin2.png")
 	# Exercise actual overlap signals rather than only calling the collision handler.
 	var goomba = level.enemies[0]
 	goomba.set_physics_process(false)
@@ -59,10 +120,10 @@ func run_checks() -> void:
 	check(level.score >= 300, "Stomp awards points through level signal")
 	await fresh_level()
 	var koopa = level.enemies[8] as Koopa
-	check(koopa.animated_sprite_2d.flip_h, "Koopa faces its initial walking direction")
+	check(not koopa.animated_sprite_2d.flip_h, "Koopa faces its initial walking direction")
 	koopa.horizontal_speed *= -1
 	koopa._on_direction_changed()
-	check(not koopa.animated_sprite_2d.flip_h, "Koopa flips to face its reversed walking direction")
+	check(koopa.animated_sprite_2d.flip_h, "Koopa flips to face its reversed walking direction")
 	koopa.die()
 	await frames(2)
 	check(koopa.in_a_shell and not koopa.is_dead, "First stomp creates a live shell")

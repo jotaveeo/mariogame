@@ -38,4 +38,4 @@ func _on_direction_changed() -> void:
 	_update_facing_direction()
 
 func _update_facing_direction() -> void:
-	animated_sprite_2d.flip_h = horizontal_speed > 0
+	animated_sprite_2d.flip_h = horizontal_speed < 0

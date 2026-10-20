@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cv5q5jjpotegk" path="res://Assets Super Mario Bros/Sprites/MysteryBlock.png" id="3_gtk2p"]
 [ext_resource type="Texture2D" uid="uid://d1qw5lvy5goip" path="res://Assets Super Mario Bros/Sprites/Brick2-dungeon.png" id="5_rukcl"]
 [ext_resource type="Texture2D" uid="uid://b2bovindw0fbq" path="res://Assets Super Mario Bros/Sprites/Brick1-dungeon.png" id="6_1gm6t"]
+[ext_resource type="Texture2D" uid="uid://dxstf3eeggcla" path="res://Assets Super Mario Bros/Sprites/EmptyBlock.png" id="7_empty_block"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gtk2p"]
 texture = ExtResource("1_lv125")
@@ -19,6 +20,24 @@ texture = ExtResource("2_6bq8a")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3v1dc"]
 texture = ExtResource("3_gtk2p")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:0/0/custom_data_0 = "coin"
+
+[sub_resource type="TileSetAtlasSource" id="MysteryMushroomAtlas"]
+texture = ExtResource("3_gtk2p")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:0/0/custom_data_0 = "mushroom"
+
+[sub_resource type="TileSetAtlasSource" id="MysteryFlowerAtlas"]
+texture = ExtResource("3_gtk2p")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:0/0/custom_data_0 = "flower"
+
+[sub_resource type="TileSetAtlasSource" id="EmptyBlockAtlas"]
+texture = ExtResource("7_empty_block")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
@@ -40,9 +59,14 @@ texture = ExtResource("5_rukcl")
 [resource]
 physics_layer_0/collision_layer = 2
 physics_layer_0/collision_mask = 0
+custom_data_layer_0/name = "reward"
+custom_data_layer_0/type = 4
 sources/1 = SubResource("TileSetAtlasSource_rukcl")
 sources/2 = SubResource("TileSetAtlasSource_1gm6t")
 sources/0 = SubResource("TileSetAtlasSource_gtk2p")
 sources/4 = SubResource("TileSetAtlasSource_4xp5l")
 sources/5 = SubResource("TileSetAtlasSource_iu40f")
 sources/11 = SubResource("TileSetAtlasSource_3v1dc")
+sources/12 = SubResource("MysteryMushroomAtlas")
+sources/13 = SubResource("MysteryFlowerAtlas")
+sources/14 = SubResource("EmptyBlockAtlas")
