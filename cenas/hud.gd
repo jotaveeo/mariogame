@@ -12,7 +12,9 @@ func update_stats(score: int, coins: int, time_left: float, minimum_score: int) 
 	var seconds: int = seconds_left % 60
 	score_label.text = "PONTOS %06d   MOEDAS %02d   TEMPO %02d:%02d" % [score, coins, minutes, seconds]
 
-	objective_label.text = "META %d  |  FALTAM %d" % [minimum_score, maxi(0, minimum_score - score)]
+	objective_label.visible = minimum_score > 0
+	if minimum_score > 0:
+		objective_label.text = "META %d  |  FALTAM %d" % [minimum_score, maxi(0, minimum_score - score)]
 
 func show_completion(score: int) -> void:
 	notice_time = 0.0

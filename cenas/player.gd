@@ -14,6 +14,7 @@ signal death_finished
 @export var run_speed_damping: float = 2.0
 @export var speed: float = 200.0
 @export var jump_velocity: float = -350.0
+var minimum_x: float = -INF
 
 @export_group("")
 @export_group("Stomping Enemies")
@@ -48,6 +49,9 @@ func _physics_process(delta: float) -> void:
 	animated_sprite_2d.trigger_animation(velocity, direction, player_mode, is_on_floor())
 
 	move_and_slide()
+	if global_position.x < minimum_x:
+		global_position.x = minimum_x
+		velocity.x = maxf(velocity.x, 0.0)
 
 func _on_area_2d_area_entered(area: Area2D) -> void:
 	var enemy = area.get_parent()

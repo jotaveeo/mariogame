@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://42p77yk22ina" path="res://cenas/level.gd" id="1_level"]
 [ext_resource type="PackedScene" uid="uid://ddwfev8ykg3lj" path="res://cenas/player.tscn" id="2_22nsn"]
+[ext_resource type="Script" uid="uid://pl7p2s6e21qt" path="res://cenas/starfield.gd" id="3_uique"]
 [ext_resource type="Texture2D" uid="uid://cq6tqakba8cj0" path="res://Assets Super Mario Bros/Sprites/Cloud1.png" id="4_uique"]
 [ext_resource type="Texture2D" uid="uid://ldf8fweos6xc" path="res://Assets Super Mario Bros/Sprites/Hill1.png" id="5_elfaa"]
 [ext_resource type="Texture2D" uid="uid://bbd1cchxb20u2" path="res://Assets Super Mario Bros/Sprites/Bush1.png" id="6_03f8d"]
@@ -30,6 +31,7 @@ size = Vector2(16, 480)
 script = ExtResource("1_level")
 
 [node name="Sky" parent="." unique_id=1396268922 instance=ExtResource("sky_scene")]
+script = ExtResource("3_uique")
 
 [node name="Player" parent="." unique_id=1186385412 instance=ExtResource("2_22nsn")]
 position = Vector2(48, 196)
