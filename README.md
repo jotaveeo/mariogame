@@ -28,12 +28,16 @@ instâncias. A interface está em `hud.tscn`.
   `points_awarded` e `death_finished`, sem recarregar a cena por conta própria.
 - `enemy.gd`: movimento com CharacterBody2D; colisão física somente com o
   terreno. `Hitbox` é uma Area2D para contato com jogador e outros inimigos.
-- `koopa.gd`: transformação, chute e parada do casco.
-- `coin.gd`: coleta única e sinal `collected`.
+- `koopa.gd`: transformação, chute, parada do casco e orientação do sprite ao
+  inverter a direção.
+- `coin.gd`: coleta única e sinal `collected`; `coin.tscn` anima seis imagens
+  em loop, com um ciclo de aproximadamente um segundo.
 - `hud.gd`: apresentação dos valores e da conclusão.
 
 Os inimigos começam inativos e são ativados pela proximidade do jogador.
-Eles não são apagados apenas por sair da câmera, permitindo voltar pelo mapa.
+Eles não são apagados apenas por sair da câmera. A câmera avança sem retornar
+às áreas já exploradas, e o jogador pode recuar até 14 pixels da borda esquerda
+da área visível.
 O jogador e os inimigos avisam a fase quando há pontos; a fase cria o efeito
 visual dentro de `Effects`. Entidades não dependem de `current_scene`.
 
@@ -45,10 +49,11 @@ Com o executável Godot no PATH:
 godot --headless --fixed-fps 60 --path . --script res://tests/level_checks.gd
 ```
 
-O teste verifica colisão inicial, instâncias reutilizáveis, moedas, pisão,
-chute/parada/dano do casco, casco atingindo inimigo, queda, tempo esgotado e
-limites físicos. Também percorre a fase até a chegada com controles simulados,
-desativando inimigos somente nesse teste para isolar a geometria.
+O teste verifica colisão inicial, instâncias reutilizáveis, animação e coleta
+de moedas, câmera e recuo, pisão, orientação do Koopa, chute/parada/dano do
+casco, casco atingindo inimigo, queda, tempo esgotado e limites físicos. Também
+percorre a fase até a chegada com controles simulados, desativando inimigos
+somente nesse teste para isolar a geometria.
 
 Isso não substitui avaliação visual e de dificuldade por uma pessoa.
 

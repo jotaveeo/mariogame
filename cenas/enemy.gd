@@ -21,6 +21,7 @@ func _physics_process(delta: float) -> void:
 		ledge_ray.force_raycast_update()
 		if is_on_wall() or (avoid_ledges and is_on_floor() and not ledge_ray.is_colliding()):
 			horizontal_speed *= -1
+			_on_direction_changed()
 	velocity.x = -horizontal_speed
 	if not is_on_floor():
 		velocity.y += gravity * delta
@@ -60,3 +61,6 @@ func _on_hitbox_area_entered(area: Area2D) -> void:
 
 func is_moving_shell() -> bool:
 	return false
+
+func _on_direction_changed() -> void:
+	pass

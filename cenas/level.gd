@@ -7,19 +7,37 @@ const POINTS_LABEL_SCENE = preload("res://cenas/points_label.tscn")
 @export_range(0, 100000, 100) var minimum_score: int = 2000
 @export var fall_limit: float = 300.0
 @export var activation_distance: float = 220.0
+@export var camera_lookahead: float = 48.0
+@export var left_recoil_margin: float = 14.0
 
 var score: int = 0
 var coins: int = 0
 var time_left: float = 0.0
 var finished: bool = false
 var enemies: Array[Enemy] = []
+var camera_progress_x: float
+var camera_half_width: float
+var camera_max_x: float
 
+@onready var terrain: TileMapLayer = $Terrain
 @onready var hero: Player = $Player
 @onready var camera: Camera2D = $Camera2D
 @onready var hud: CanvasLayer = $HUD
 
 func _ready() -> void:
 	time_left = time_limit
+	var used_rect = terrain.get_used_rect()
+	var tile_size = terrain.tile_set.tile_size
+	var last_tile = used_rect.end - Vector2i.ONE
+	var map_end = terrain.to_global(terrain.map_to_local(last_tile)) + Vector2(tile_size) / 2.0
+	var map_right = minf(map_end.x, float(level_width))
+	camera.limit_left = 0
+	camera.limit_right = ceili(map_right)
+	camera_half_width = get_viewport_rect().size.x / (2.0 * camera.zoom.x)
+	camera_max_x = maxf(camera_half_width, map_right - camera_half_width)
+	camera_progress_x = clampf(maxf(camera_half_width, hero.global_position.x + camera_lookahead), camera_half_width, camera_max_x)
+	camera.global_position.x = camera_progress_x
+	hero.minimum_x = camera_progress_x - camera_half_width + left_recoil_margin
 	hero.points_awarded.connect(_award_points)
 	hero.death_finished.connect(_restart)
 	for enemy in $Enemies.get_children():
@@ -30,7 +48,6 @@ func _ready() -> void:
 	for coin in $Coins.get_children():
 		coin.collected.connect(_collect_coin)
 	$Finish/Goal.body_entered.connect(_finish)
-	camera.limit_right = level_width
 	_update_hud()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -41,8 +58,9 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if finished:
 		return
-	var half_width = get_viewport_rect().size.x / (2.0 * camera.zoom.x)
-	camera.position.x = clampf(hero.position.x + 48, half_width, level_width - half_width)
+	camera_progress_x = minf(camera_max_x, maxf(camera_progress_x, hero.global_position.x + camera_lookahead))
+	camera.global_position.x = camera_progress_x
+	hero.minimum_x = camera_progress_x - camera_half_width + left_recoil_margin
 	for enemy in enemies:
 		if is_instance_valid(enemy) and not enemy.is_dead and not enemy.is_physics_processing():
 			if absf(enemy.position.x - hero.position.x) < activation_distance:

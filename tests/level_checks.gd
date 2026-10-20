@@ -35,7 +35,16 @@ func run_checks() -> void:
 	check(InputMap.has_action("restart"), "Restart is mapped as an action")
 	var coin = level.get_node("Coins").get_child(0)
 	check(coin.scene_file_path == "res://cenas/coin.tscn", "Coins use a reusable scene")
+	var coin_sprite: AnimatedSprite2D = coin.get_node("AnimatedSprite2D")
+	check(coin_sprite.sprite_frames.get_frame_count("default") == 6, "Coin animation uses all six frames")
+	check(coin_sprite.sprite_frames.get_animation_speed("default") == 6.0 and coin_sprite.sprite_frames.get_animation_loop("default") and coin_sprite.autoplay == "default" and coin_sprite.is_playing(), "Coin animation loops automatically once per second")
 	check(level.hud.scene_file_path == "res://cenas/hud.tscn", "HUD uses a reusable scene")
+	check(level.hero.minimum_x == level.camera_progress_x - level.camera_half_width + 14.0, "Camera recoil margin is fourteen pixels")
+	level.camera_progress_x = 500.0
+	level.camera.global_position.x = level.camera_progress_x
+	level.hero.global_position.x = 100.0
+	level._physics_process(0.0)
+	check(level.camera_progress_x == 500.0, "Main camera does not move back into explored scenery")
 	coin._on_body_entered(level.hero)
 	coin._on_body_entered(level.hero)
 	check(level.coins == 1 and level.score == 200, "Coin awards points only once")
@@ -50,6 +59,10 @@ func run_checks() -> void:
 	check(level.score >= 300, "Stomp awards points through level signal")
 	await fresh_level()
 	var koopa = level.enemies[8] as Koopa
+	check(koopa.animated_sprite_2d.flip_h, "Koopa faces its initial walking direction")
+	koopa.horizontal_speed *= -1
+	koopa._on_direction_changed()
+	check(not koopa.animated_sprite_2d.flip_h, "Koopa flips to face its reversed walking direction")
 	koopa.die()
 	await frames(2)
 	check(koopa.in_a_shell and not koopa.is_dead, "First stomp creates a live shell")
