@@ -7,8 +7,8 @@ const GRAVITY: float = 980.0
 const MUSHROOM_SPEED: float = 60.0
 
 @onready var sprite: Sprite2D = $Sprite2D
+@onready var body_collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var pickup_area: Area2D = $PickupArea
-@onready var ledge_ray: RayCast2D = $LedgeRay
 
 var item_type: StringName
 var active: bool = false
@@ -21,6 +21,7 @@ func setup(reward: StringName) -> void:
 func _ready() -> void:
 	sprite.texture = MUSHROOM_TEXTURE if item_type == &"mushroom" else FLOWER_TEXTURE
 	pickup_area.monitoring = false
+	body_collision_shape.set_deferred("disabled", true)
 	var tween = create_tween()
 	tween.tween_property(self, "position", position + Vector2(0, -16), 0.3)
 	tween.tween_callback(_activate)
@@ -28,9 +29,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if not active or item_type != &"mushroom":
 		return
-	ledge_ray.position.x = direction * 8.0
-	ledge_ray.force_raycast_update()
-	if is_on_wall() or (is_on_floor() and not ledge_ray.is_colliding()):
+	if is_on_wall():
 		direction *= -1.0
 	velocity.x = direction * MUSHROOM_SPEED
 	if not is_on_floor():
@@ -41,6 +40,7 @@ func _physics_process(delta: float) -> void:
 
 func _activate() -> void:
 	active = true
+	body_collision_shape.set_deferred("disabled", false)
 	pickup_area.set_deferred("monitoring", true)
 
 func _on_pickup_area_body_entered(body: Node2D) -> void:

@@ -1,5 +1,5 @@
 class_name MysteryBlockManager
-extends Node
+extends Node2D
 
 signal coin_collected
 
@@ -46,11 +46,13 @@ func _on_block_activated(reward: StringName, world_position: Vector2, cell: Vect
 	blocks.erase(cell)
 	if reward == &"coin":
 		var popup: Node2D = COIN_POPUP_SCENE.instantiate()
+		popup.position = to_local(world_position)
+		popup.z_index = 2
 		add_child(popup)
-		popup.global_position = world_position
 		coin_collected.emit()
 		return
 	var power_up: PowerUp = POWER_UP_SCENE.instantiate()
 	power_up.setup(reward)
+	power_up.position = to_local(world_position)
+	power_up.z_index = 0
 	add_child(power_up)
-	power_up.global_position = world_position

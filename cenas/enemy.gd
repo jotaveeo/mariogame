@@ -6,6 +6,7 @@ signal points_awarded(points: int, location: Vector2)
 @export var horizontal_speed: float = 20.0
 @export var gravity: float = 980.0
 @export var avoid_ledges: bool = true
+@export var ledge_check_offset: float = 6.0
 
 var is_dead: bool = false
 
@@ -17,7 +18,7 @@ func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
 	if horizontal_speed != 0:
-		ledge_ray.position.x = -signf(horizontal_speed) * 14.0
+		ledge_ray.position.x = -signf(horizontal_speed) * ledge_check_offset
 		ledge_ray.force_raycast_update()
 		if is_on_wall() or (avoid_ledges and is_on_floor() and not ledge_ray.is_colliding()):
 			horizontal_speed *= -1

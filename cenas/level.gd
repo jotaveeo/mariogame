@@ -3,7 +3,7 @@ extends Node2D
 const POINTS_LABEL_SCENE = preload("res://cenas/points_label.tscn")
 
 @export var level_width: int = 3520
-@export_range(1.0, 3600.0, 1.0) var time_limit: float = 60.0
+@export_range(1.0, 3600.0, 1.0) var time_limit: float = 120.0
 @export_range(0, 100000, 100) var minimum_score: int = 2000
 @export var fall_limit: float = 300.0
 @export var activation_distance: float = 220.0

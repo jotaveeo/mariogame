@@ -32,6 +32,14 @@ vale 200 pontos e incrementa o contador de moedas. O cogumelo transforma Mario
 em adulto; a flor ativa o poder de fogo. Um dano reduz fogo para adulto e
 adulto para pequeno antes de matar Mario. Com o poder de fogo, pressione Espaço
 para lançar fireballs que ricocheteiam no chão e eliminam inimigos.
+Cada transformação ou perda de poder pausa o movimento por um segundo e alterna
+visualmente entre a forma anterior e a nova. Cada fase tem limite inicial de
+dois minutos.
+
+As recompensas surgem da posição do bloco: a moeda sobe e desaparece como
+feedback; cogumelo e flor emergem em uma camada visual atrás do bloco. Depois
+de emergir, o cogumelo ganha colisão e segue para a direita, enquanto a flor
+fica parada até ser coletada.
 
 A animação do bloco usa `MysteryBlock.png`, `MysteryBox1.png` e
 `MysterBox2.png` em loop.
@@ -58,6 +66,8 @@ A animação do bloco usa `MysteryBlock.png`, `MysteryBox1.png` e
 - `hud.gd`: apresentação dos valores e da conclusão.
 
 Os inimigos começam inativos e são ativados pela proximidade do jogador.
+Eles verificam o chão a seis pixels à frente para chegar mais perto das bordas;
+o cogumelo não inverte a direção em precipícios.
 Eles não são apagados apenas por sair da câmera. A câmera avança sem retornar
 às áreas já exploradas, e o jogador pode recuar até 14 pixels da borda esquerda
 da área visível.

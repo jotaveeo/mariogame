@@ -32,6 +32,8 @@ func run_checks() -> void:
 	check(level.get_node("Terrain") is TileMapLayer, "Terrain uses TileMapLayer")
 	check(not level.get_node("Terrain").get_used_cells().is_empty(), "Terrain contains painted tiles")
 	check(level.enemies.size() == 12, "All twelve enemies are preserved")
+	check(level.time_limit == 120.0, "Main level gives the player two minutes")
+	check(level.enemies[0].ledge_check_offset == 6.0, "Enemies detect ledges close to their feet")
 	check(InputMap.has_action("restart"), "Restart is mapped as an action")
 	var coin = level.get_node("Coins").get_child(0)
 	check(coin.scene_file_path == "res://cenas/coin.tscn", "Coins use a reusable scene")
@@ -57,6 +59,7 @@ func run_checks() -> void:
 	var original_hero_position = level.hero.global_position
 	var original_camera_progress = level.camera_progress_x
 	var test_block_cell = Vector2i(-5, -5)
+	var flower_block_position = terrain.to_global(terrain.map_to_local(test_block_cell))
 	terrain.set_cell(test_block_cell, 13, Vector2i.ZERO)
 	mystery_manager.register_cell(test_block_cell)
 	level.hero.mystery_block_hit.emit(terrain, test_block_cell)
@@ -64,8 +67,20 @@ func run_checks() -> void:
 	await frames(12)
 	check(terrain.get_cell_source_id(test_block_cell) == 14, "Used mystery block changes to EmptyBlock")
 	var flower = mystery_manager.get_node("PowerUp") as PowerUp
+	check(flower.global_position.distance_to(flower_block_position) < 5.0, "Flower starts its emergence at the struck block")
+	await frames(20)
+	check(flower.active and absf(flower.global_position.y - (flower_block_position.y - 16.0)) < 2.0, "Flower emerges upward and stops at its final position")
+	var flower_final_position = flower.global_position
+	await frames(3)
+	check(flower.global_position.is_equal_approx(flower_final_position), "Flower stays in place until collected")
 	flower._on_pickup_area_body_entered(level.hero)
 	check(level.hero.player_mode == Player.PlayerMode.SHOOTING, "Flower reward activates shooting form")
+	check(level.hero.transformation_time_left == 1.0 and level.hero.velocity == Vector2.ZERO, "Flower transformation locks player movement for one second")
+	check(level.hero.animated_sprite_2d.animation == "small_idle", "Transformation starts by showing the old form")
+	await frames(7)
+	check(level.hero.animated_sprite_2d.animation == "shooting_idle", "Transformation flashes the new form")
+	await frames(60)
+	check(level.hero.transformation_time_left == 0.0 and level.hero.animated_sprite_2d.animation == "shooting_idle", "Transformation ends in the new form after one second")
 	level.hero.animated_sprite_2d.scale.x = -1.0
 	level.hero._shoot_fireball()
 	var fireball = level.get_node("Fireball")
@@ -82,22 +97,40 @@ func run_checks() -> void:
 	level.hero.minimum_x = original_camera_progress - level.camera_half_width + 14.0
 	level.hero.take_damage()
 	check(level.hero.player_mode == Player.PlayerMode.BIG and not level.hero.is_dead, "First damage removes fire power without killing Mario")
+	check(level.hero.transformation_time_left == 1.0, "Power loss also starts a one-second transformation")
+	await frames(61)
 	level.hero.damage_invulnerability = 0.0
 	level.hero.take_damage()
 	check(level.hero.player_mode == Player.PlayerMode.SMALL and not level.hero.is_dead, "Second damage returns Mario to small form")
+	await frames(61)
 	fireball.queue_free()
 	var mushroom_cell = Vector2i(-7, -5)
+	var mushroom_block_position = terrain.to_global(terrain.map_to_local(mushroom_cell))
 	terrain.set_cell(mushroom_cell, 12, Vector2i.ZERO)
 	mystery_manager.register_cell(mushroom_cell)
 	level.hero.mystery_block_hit.emit(terrain, mushroom_cell)
 	await frames(12)
 	var mushroom = mystery_manager.get_node("PowerUp") as PowerUp
 	check(mushroom.get_node("Sprite2D").texture.resource_path.ends_with("MagicMushroom.png"), "Mushroom reward uses MagicMushroom.png")
+	check(mushroom.global_position.distance_to(mushroom_block_position) < 5.0 and mushroom.z_index == 0, "Mushroom starts inside the block on a lower visual layer")
+	await frames(20)
+	check(mushroom.active and mushroom.global_position.y < mushroom_block_position.y, "Mushroom emerges upward before activating")
+	var mushroom_start_x = mushroom.global_position.x
+	await frames(5)
+	check(mushroom.global_position.x > mushroom_start_x, "Mushroom begins moving horizontally to the right")
 	mushroom._on_pickup_area_body_entered(level.hero)
-	check(level.hero.player_mode == Player.PlayerMode.BIG and (level.hero.body_collision_shape.shape as RectangleShape2D).size.y == 24.0, "Mushroom activates adult form and enlarges the collision shape")
+	check(level.hero.player_mode == Player.PlayerMode.BIG, "Mushroom activates adult form")
+	check(level.hero.transformation_time_left == 1.0 and level.hero.velocity == Vector2.ZERO, "Mushroom transformation locks player movement for one second")
+	check(level.hero.animated_sprite_2d.animation == "small_idle", "Mushroom transformation starts with the small sprite")
+	await frames(1)
+	check((level.hero.body_collision_shape.shape as RectangleShape2D).size.y == 24.0, "Mushroom enlarges the collision shape after the physics query")
+	await frames(7)
+	check(level.hero.animated_sprite_2d.animation == "big_idle", "Mushroom transformation flashes the adult sprite")
+	await frames(60)
 	level.hero.damage_invulnerability = 0.0
 	level.hero.take_damage()
 	check(level.hero.player_mode == Player.PlayerMode.SMALL, "Damage removes the mushroom power")
+	await frames(61)
 	coin._on_body_entered(level.hero)
 	coin._on_body_entered(level.hero)
 	check(level.coins == 1 and level.score == 200, "Coin awards points only once")
@@ -109,6 +142,8 @@ func run_checks() -> void:
 	check(level.coins == 2 and level.score == 400, "Mystery block coin awards 200 points and increments the coin count")
 	var coin_popup = mystery_manager.get_node("CoinPopup")
 	check(coin_popup.get_node("Sprite2D").texture.resource_path.ends_with("Coin2.png"), "Mystery block coin uses Coin2.png")
+	var coin_block_position = terrain.to_global(terrain.map_to_local(test_coin_cell))
+	check(absf(coin_popup.global_position.x - coin_block_position.x) < 2.0 and coin_popup.global_position.y <= coin_block_position.y and coin_popup.z_index > 1, "Coin popup rises from the struck block above its visual layer")
 	# Exercise actual overlap signals rather than only calling the collision handler.
 	var goomba = level.enemies[0]
 	goomba.set_physics_process(false)

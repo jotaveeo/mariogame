@@ -5,7 +5,7 @@ const POINTS_LABEL_SCENE = preload("res://cenas/points_label.tscn")
 @export var fall_margin: float = 64.0
 @export var camera_lookahead: float = 48.0
 @export var left_recoil_margin: float = 14.0
-@export_range(1.0, 3600.0, 1.0) var time_limit: float = 60.0
+@export_range(1.0, 3600.0, 1.0) var time_limit: float = 120.0
 
 @onready var terrain: TileMapLayer = $Terrain
 @onready var hero: Player = $Player

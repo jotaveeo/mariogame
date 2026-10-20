@@ -11,6 +11,9 @@ signal points_awarded(points: int, location: Vector2)
 signal death_finished
 signal mystery_block_hit(terrain: TileMapLayer, cell: Vector2i)
 
+const TRANSFORMATION_DURATION: float = 1.0
+const TRANSFORMATION_FLASH_INTERVAL: float = 0.1
+
 @export_group("Locomotion")
 @export var run_speed_damping: float = 2.0
 @export var speed: float = 200.0
@@ -29,6 +32,10 @@ var player_mode: PlayerMode = PlayerMode.SMALL
 var is_dead: bool = false
 var damage_invulnerability: float = 0.0
 var shoot_cooldown: float = 0.0
+var transformation_time_left: float = 0.0
+var transformation_flash_time_left: float = 0.0
+var transformation_from_mode: PlayerMode
+var transformation_show_new_mode: bool = false
 
 @onready var animated_sprite_2d: PlayerAnimatedSprite = $AnimatedSprite2D
 @onready var body_collision_shape: CollisionShape2D = $BodyCollisionShape2D
@@ -37,6 +44,16 @@ var shoot_cooldown: float = 0.0
 func _physics_process(delta: float) -> void:
 	damage_invulnerability = maxf(0.0, damage_invulnerability - delta)
 	shoot_cooldown = maxf(0.0, shoot_cooldown - delta)
+	if transformation_time_left > 0.0:
+		transformation_time_left = maxf(0.0, transformation_time_left - delta)
+		transformation_flash_time_left -= delta
+		if transformation_flash_time_left <= 0.0:
+			transformation_flash_time_left += TRANSFORMATION_FLASH_INTERVAL
+			transformation_show_new_mode = not transformation_show_new_mode
+			_play_mode_idle(player_mode if transformation_show_new_mode else transformation_from_mode)
+		if transformation_time_left == 0.0:
+			_play_mode_idle(player_mode)
+		return
 	if not is_on_floor():
 		velocity.y += gravity * delta
 		
@@ -119,7 +136,7 @@ func die() -> void:
 	death_tween.tween_callback(death_finished.emit)
 
 func apply_powerup(item_type: StringName) -> void:
-	if is_dead:
+	if is_dead or transformation_time_left > 0.0:
 		return
 	if item_type == &"mushroom" and player_mode == PlayerMode.SMALL:
 		_set_player_mode(PlayerMode.BIG)
@@ -127,7 +144,7 @@ func apply_powerup(item_type: StringName) -> void:
 		_set_player_mode(PlayerMode.SHOOTING)
 
 func take_damage() -> void:
-	if is_dead or damage_invulnerability > 0.0:
+	if is_dead or damage_invulnerability > 0.0 or transformation_time_left > 0.0:
 		return
 	if player_mode == PlayerMode.SHOOTING:
 		_set_player_mode(PlayerMode.BIG)
@@ -138,18 +155,30 @@ func take_damage() -> void:
 	damage_invulnerability = 1.0
 
 func _set_player_mode(new_mode: PlayerMode) -> void:
+	if player_mode == new_mode:
+		return
+	transformation_from_mode = player_mode
 	player_mode = new_mode
+	transformation_time_left = TRANSFORMATION_DURATION
+	transformation_flash_time_left = 0.0
+	transformation_show_new_mode = false
 	var is_small = new_mode == PlayerMode.SMALL
 	var shape_size = Vector2(12.0, 16.0) if is_small else Vector2(12.0, 24.0)
 	var shape_offset = 0.0 if is_small else -4.0
-	body_collision_shape.shape = body_collision_shape.shape.duplicate()
-	area_collision_shape.shape = area_collision_shape.shape.duplicate()
-	(body_collision_shape.shape as RectangleShape2D).size = shape_size
-	(area_collision_shape.shape as RectangleShape2D).size = shape_size
-	body_collision_shape.position.y = shape_offset
-	area_collision_shape.position.y = shape_offset
+	var body_shape = RectangleShape2D.new()
+	body_shape.size = shape_size
+	var area_shape = RectangleShape2D.new()
+	area_shape.size = shape_size
+	body_collision_shape.set_deferred("shape", body_shape)
+	area_collision_shape.set_deferred("shape", area_shape)
+	body_collision_shape.set_deferred("position", Vector2(body_collision_shape.position.x, shape_offset))
+	area_collision_shape.set_deferred("position", Vector2(area_collision_shape.position.x, shape_offset))
 	animated_sprite_2d.position.y = shape_offset
-	animated_sprite_2d.play(PlayerMode.keys()[new_mode].to_snake_case() + "_idle")
+	velocity = Vector2.ZERO
+	_play_mode_idle(transformation_from_mode)
+
+func _play_mode_idle(mode: PlayerMode) -> void:
+	animated_sprite_2d.play(PlayerMode.keys()[mode].to_snake_case() + "_idle")
 
 func _shoot_fireball() -> void:
 	if shoot_cooldown > 0.0:
