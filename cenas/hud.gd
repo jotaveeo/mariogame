@@ -14,9 +14,12 @@ func update_stats(score: int, coins: int, time_left: float, minimum_score: int) 
 
 	objective_label.text = "META %d  |  FALTAM %d" % [minimum_score, maxi(0, minimum_score - score)]
 
-func show_completion(score: int) -> void:
+func show_completion(score: int, has_next_level: bool = false) -> void:
 	notice_time = 0.0
 	message_label.text = "FASE CONCLUÍDA!\nPontos: %d\nR para jogar novamente" % score
+
+	if has_next_level:
+		message_label.text = "FASE CONCLUÍDA!\nPontos: %d\nENTER: próxima fase" % score
 
 func show_timeout() -> void:
 	notice_time = 0.0

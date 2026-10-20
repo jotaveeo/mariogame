@@ -1,7 +1,9 @@
+class_name GameLevel
 extends Node2D
 
 const POINTS_LABEL_SCENE = preload("res://cenas/points_label.tscn")
 
+@export_file("*.tscn") var next_level_path: String = ""
 @export var level_width: int = 3520
 @export_range(1.0, 3600.0, 1.0) var time_limit: float = 60.0
 @export_range(0, 100000, 100) var minimum_score: int = 2000
@@ -20,6 +22,7 @@ var enemies: Array[Enemy] = []
 
 func _ready() -> void:
 	time_left = time_limit
+	_configure_level()
 	hero.points_awarded.connect(_award_points)
 	hero.death_finished.connect(_restart)
 	for enemy in $Enemies.get_children():
@@ -30,13 +33,25 @@ func _ready() -> void:
 	for coin in $Coins.get_children():
 		coin.collected.connect(_collect_coin)
 	$Finish/Goal.body_entered.connect(_finish)
+	var manager = MysteryBlockManager.new()
+	manager.name = "MysteryBlockManager"
+	add_child(manager)
+	manager.coin_collected.connect(_collect_coin)
+	manager.setup($Terrain, hero)
 	camera.limit_right = level_width
 	_update_hud()
 
+func _configure_level() -> void:
+	pass
+
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("restart") and not event.is_echo():
-		_restart()
+	if finished and not next_level_path.is_empty() and event.is_action_pressed("ui_accept") and not event.is_echo():
 		get_viewport().set_input_as_handled()
+		get_tree().change_scene_to_file(next_level_path)
+		return
+	if event.is_action_pressed("restart") and not event.is_echo():
+		get_viewport().set_input_as_handled()
+		_restart()
 
 func _physics_process(delta: float) -> void:
 	if finished:
@@ -90,4 +105,4 @@ func _finish(body: Node2D) -> void:
 		if is_instance_valid(enemy):
 			enemy.set_physics_process(false)
 	_update_hud()
-	hud.show_completion(score)
+	hud.show_completion(score, not next_level_path.is_empty())

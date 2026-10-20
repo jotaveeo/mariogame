@@ -1,5 +1,9 @@
 # Marioatt
 
+A versão principal é a fase lunar original da `main`, desenvolvida por Jotaveeo.
+A dungeon e os novos poderes são contribuições de Felipe, integradas à mesma
+base. A fase lunar continua sendo a cena inicial do projeto.
+
 Projeto de plataforma para Godot 4.7. Abra `project.godot` e pressione F5.
 
 - Setas esquerda/direita: mover.
@@ -58,3 +62,38 @@ Referências oficiais:
 - https://docs.godotengine.org/en/4.7/tutorials/2d/using_tilemaps.html
 - https://docs.godotengine.org/en/4.7/tutorials/physics/using_character_body_2d.html
 - https://docs.godotengine.org/en/4.7/tutorials/inputs/input_examples.html
+
+
+## Integração da dungeon
+
+O jogo começa em `cenas/main.tscn`. As duas fases usam limite de **60 segundos**
+e meta de **2.000 pontos**, ajustáveis no Inspector. O bônus de conclusão não
+conta para liberar a chegada. A câmera permite voltar para buscar pontos.
+
+Após concluir a fase lunar, pressione **Enter** para entrar na dungeon.
+Cada fase começa com seu próprio tempo, pontuação e jogador. R reinicia a fase
+atual. Também é possível abrir `cenas/dungeon_level.tscn` e usar F6 para testá-la.
+
+`dungeon_level.gd` herda o controlador `GameLevel` de `level.gd`, incluindo
+pontuação mínima, cronômetro, conexão da chegada e interface. Seu layout e
+recursos visuais ficam na cena da dungeon, sem substituir a fase principal.
+
+Contribuições integradas de Felipe:
+
+- WASD como alternativa às setas e moedas animadas.
+- Koopa vira o sprite ao mudar de direção.
+- Blocos misteriosos: fontes 11 (moeda), 12 (cogumelo) e 13 (flor) do TileSet.
+- Cogumelo aumenta Mario; flor permite atirar com Espaço.
+- Dano reduz fogo para grande, grande para pequeno, e então mata o jogador.
+- Power-ups aguardam o fim de uma transformação antes de serem consumidos.
+
+Testes adicionais de integração:
+
+```sh
+godot --headless --fixed-fps 60 --path . --script res://tests/integration_checks.gd
+```
+
+Esses testes verificam a preservação das regras principais, recompensas,
+transformações, descarte de projéteis, passagem entre as fases e conclusão da
+dungeon. O teste automático de percurso completo cobre a fase lunar; o caminho
+e a dificuldade da dungeon ainda precisam de validação jogando.
