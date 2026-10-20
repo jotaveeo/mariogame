@@ -3,6 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://bh2i2pbd72n30" path="res://Assets Super Mario Bros/Sprites/GroundBlock.png" id="1_lv125"]
 [ext_resource type="Texture2D" uid="uid://da0nkv78pyvik" path="res://Assets Super Mario Bros/Sprites/Brick.png" id="2_6bq8a"]
 [ext_resource type="Texture2D" uid="uid://8as4lix1a8pr" path="res://Assets Super Mario Bros/Sprites/HardBlock.png" id="3_4xp5l"]
+[ext_resource type="Texture2D" uid="uid://d1qw5lvy5goip" path="res://Assets Super Mario Bros/Sprites/Brick2-dungeon.png" id="5_rukcl"]
+[ext_resource type="Texture2D" uid="uid://b2bovindw0fbq" path="res://Assets Super Mario Bros/Sprites/Brick1-dungeon.png" id="6_1gm6t"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gtk2p"]
 texture = ExtResource("1_lv125")
@@ -19,9 +21,19 @@ texture = ExtResource("3_4xp5l")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4xp5l"]
+texture = ExtResource("6_1gm6t")
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_iu40f"]
+texture = ExtResource("5_rukcl")
+0:0/0 = 0
+
 [resource]
 physics_layer_0/collision_layer = 2
 physics_layer_0/collision_mask = 0
-sources/0 = SubResource("TileSetAtlasSource_gtk2p")
 sources/1 = SubResource("TileSetAtlasSource_rukcl")
 sources/2 = SubResource("TileSetAtlasSource_1gm6t")
+sources/0 = SubResource("TileSetAtlasSource_gtk2p")
+sources/4 = SubResource("TileSetAtlasSource_4xp5l")
+sources/5 = SubResource("TileSetAtlasSource_iu40f")
