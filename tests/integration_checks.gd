@@ -30,7 +30,17 @@ func run_checks() -> void:
 	check(level.time_limit == 60.0 and level.minimum_score == 2000, "Main rules remain one minute and 2000 points")
 	check(level.hero.is_on_floor(), "Main spawn remains valid")
 	check(level.next_level_path == "res://cenas/dungeon_level.tscn", "Dungeon follows the main level")
-	check(level.hero.minimum_x == -INF, "Player can return for missed points")
+	level.hero.position.x = 700
+	level._update_camera()
+	var camera_x = level.camera.global_position.x
+	var left_limit = level.hero.minimum_x
+	level.hero.position.x = 100
+	level._update_camera()
+	check(level.camera.global_position.x == camera_x, "Camera never scrolls backward")
+	level.hero._physics_process(0.0)
+	check(level.hero.global_position.x >= left_limit, "Player cannot return beyond the left screen edge")
+	check(level.hero.minimum_x < camera_x, "Player can still move left within the visible screen")
+	await open_level("res://cenas/main.tscn")
 	var manager = level.get_node("MysteryBlockManager")
 	var cell = Vector2i(-6, -5)
 	level.get_node("Terrain").set_cell(cell, 11, Vector2i.ZERO)
@@ -65,6 +75,19 @@ func run_checks() -> void:
 	check(level.scene_file_path == "res://cenas/dungeon_level.tscn", "Enter advances to dungeon after main completion")
 	await frames(30)
 	check(level.hero.is_on_floor() and not level.hero.is_dead, "Dungeon has safe spawn")
+	var initial_feet = level.hero.global_position.y + 8.0
+	level.hero.apply_powerup(&"mushroom")
+	for index in range(70):
+		await frames(1)
+		var sprite = level.hero.animated_sprite_2d
+		var texture = sprite.sprite_frames.get_frame_texture(sprite.animation, sprite.frame)
+		var sprite_feet = sprite.global_position.y + texture.get_height() / 2.0
+		var shape = level.hero.body_collision_shape
+		var physical_feet = shape.global_position.y + shape.shape.size.y / 2.0
+		check(absf(sprite_feet - physical_feet) < 0.1, "Sprite and physical feet remain aligned during transformation")
+	check(level.hero.is_on_floor(), "Big Mario stays on the dungeon floor")
+	check(absf(level.hero.global_position.y + 8.0 - initial_feet) < 0.1, "Growing does not move feet into terrain")
+	check(level.hero.body_collision_shape.shape.size.y == 32, "Big collider matches 32 pixel sprite")
 	check(level.time_limit == 60 and level.minimum_score == 2000, "Dungeon uses shared rules")
 	check(level.get_node("Finish/Goal").body_entered.get_connections().size() > 0, "Dungeon goal is connected")
 	level.score = 1999

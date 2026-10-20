@@ -37,7 +37,9 @@ instâncias. A interface está em `hud.tscn`.
 - `hud.gd`: apresentação dos valores e da conclusão.
 
 Os inimigos começam inativos e são ativados pela proximidade do jogador.
-Eles não são apagados apenas por sair da câmera, permitindo voltar pelo mapa.
+Eles não são apagados apenas por sair da câmera. A câmera só avança: Mario
+pode andar para a esquerda dentro da tela, mas não voltar às áreas que ficaram
+para trás.
 O jogador e os inimigos avisam a fase quando há pontos; a fase cria o efeito
 visual dentro de `Effects`. Entidades não dependem de `current_scene`.
 
@@ -68,7 +70,8 @@ Referências oficiais:
 
 O jogo começa em `cenas/main.tscn`. As duas fases usam limite de **60 segundos**
 e meta de **2.000 pontos**, ajustáveis no Inspector. O bônus de conclusão não
-conta para liberar a chegada. A câmera permite voltar para buscar pontos.
+conta para liberar a chegada. A câmera não retorna. Colete a pontuação mínima durante o avanço; se deixar
+pontos para trás, será necessário tentar novamente com R.
 
 Após concluir a fase lunar, pressione **Enter** para entrar na dungeon.
 Cada fase começa com seu próprio tempo, pontuação e jogador. R reinicia a fase

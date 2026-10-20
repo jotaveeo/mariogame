@@ -167,8 +167,8 @@ func _set_player_mode(new_mode: PlayerMode) -> void:
 	transformation_flash_time_left = 0.0
 	transformation_show_new_mode = false
 	var is_small = new_mode == PlayerMode.SMALL
-	var shape_size = Vector2(12.0, 16.0) if is_small else Vector2(12.0, 24.0)
-	var shape_offset = 0.0 if is_small else -4.0
+	var shape_size = Vector2(12.0, 16.0) if is_small else Vector2(12.0, 32.0)
+	var shape_offset = (16.0 - shape_size.y) / 2.0
 	var body_shape = RectangleShape2D.new()
 	body_shape.size = shape_size
 	var area_shape = RectangleShape2D.new()
@@ -177,7 +177,6 @@ func _set_player_mode(new_mode: PlayerMode) -> void:
 	area_collision_shape.set_deferred("shape", area_shape)
 	body_collision_shape.set_deferred("position", Vector2(body_collision_shape.position.x, shape_offset))
 	area_collision_shape.set_deferred("position", Vector2(area_collision_shape.position.x, shape_offset))
-	animated_sprite_2d.position.y = shape_offset
 	velocity = Vector2.ZERO
 	_play_mode_idle(transformation_from_mode)
 

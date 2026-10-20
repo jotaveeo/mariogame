@@ -9,12 +9,15 @@ const POINTS_LABEL_SCENE = preload("res://cenas/points_label.tscn")
 @export_range(0, 100000, 100) var minimum_score: int = 2000
 @export var fall_limit: float = 300.0
 @export var activation_distance: float = 220.0
+@export var camera_lookahead: float = 48.0
+@export_range(6.0, 32.0, 1.0) var left_screen_margin: float = 14.0
 
 var score: int = 0
 var coins: int = 0
 var time_left: float = 0.0
 var finished: bool = false
 var enemies: Array[Enemy] = []
+var camera_progress_x: float = 0.0
 
 @onready var hero: Player = $Player
 @onready var camera: Camera2D = $Camera2D
@@ -39,6 +42,7 @@ func _ready() -> void:
 	manager.coin_collected.connect(_collect_coin)
 	manager.setup($Terrain, hero)
 	camera.limit_right = level_width
+	_update_camera()
 	_update_hud()
 
 func _configure_level() -> void:
@@ -56,8 +60,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if finished:
 		return
-	var half_width = get_viewport_rect().size.x / (2.0 * camera.zoom.x)
-	camera.position.x = clampf(hero.position.x + 48, half_width, level_width - half_width)
+	_update_camera()
 	for enemy in enemies:
 		if is_instance_valid(enemy) and not enemy.is_dead and not enemy.is_physics_processing():
 			if absf(enemy.position.x - hero.position.x) < activation_distance:
@@ -72,6 +75,14 @@ func _physics_process(delta: float) -> void:
 	_update_hud()
 	if score >= minimum_score and $Finish/Goal.overlaps_body(hero):
 		_finish(hero)
+
+func _update_camera() -> void:
+	var half_width = get_viewport_rect().size.x / (2.0 * camera.zoom.x)
+	var max_x = maxf(half_width, level_width - half_width)
+	var target_x = clampf(hero.global_position.x + camera_lookahead, half_width, max_x)
+	camera_progress_x = clampf(maxf(camera_progress_x, target_x), half_width, max_x)
+	camera.global_position.x = camera_progress_x
+	hero.minimum_x = camera_progress_x - half_width + left_screen_margin
 
 func _collect_coin() -> void:
 	coins += 1
