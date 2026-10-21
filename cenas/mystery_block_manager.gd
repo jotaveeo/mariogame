@@ -8,7 +8,10 @@ const POWER_UP_SCENE = preload("res://cenas/power_up.tscn")
 const COIN_POPUP_SCENE = preload("res://cenas/coin_popup.tscn")
 const MYSTERY_TILE_SOURCES = [11, 12, 13]
 const EMPTY_BLOCK_SOURCE: int = 14
-const TERRAIN_BLOCK_SOURCES = [0, 1, 2, 4, 5, 14]
+const BUMPABLE_TERRAIN_SOURCES = [1, 4]
+const BREAKABLE_TERRAIN_SOURCES = [1, 4]
+const ENEMY_HIT_HEIGHT: float = 30.0
+const FRAGMENT_SCALE: Vector2 = Vector2(0.5, 0.5)
 
 var terrain: TileMapLayer
 var player: Player
@@ -46,14 +49,14 @@ func _on_player_hit_block(hit_terrain: TileMapLayer, cell: Vector2i) -> void:
 		blocks[cell].bump()
 		return
 	var source_id = terrain.get_cell_source_id(cell)
-	if not TERRAIN_BLOCK_SOURCES.has(source_id):
-		return
 	var atlas_coords = terrain.get_cell_atlas_coords(cell)
 	var alternative_tile = terrain.get_cell_alternative_tile(cell)
 	if player.player_mode == Player.PlayerMode.SMALL:
-		_bump_terrain_block(cell, source_id, atlas_coords, alternative_tile)
+		if BUMPABLE_TERRAIN_SOURCES.has(source_id):
+			_bump_terrain_block(cell, source_id, atlas_coords, alternative_tile)
 	elif player.player_mode == Player.PlayerMode.BIG or player.player_mode == Player.PlayerMode.SHOOTING:
-		_break_terrain_block(cell, source_id, atlas_coords)
+		if BREAKABLE_TERRAIN_SOURCES.has(source_id):
+			_break_terrain_block(cell, source_id, atlas_coords)
 
 func _bump_terrain_block(cell: Vector2i, source_id: int, atlas_coords: Vector2i, alternative_tile: int) -> void:
 	animated_cells[cell] = true
@@ -78,18 +81,16 @@ func _break_terrain_block(cell: Vector2i, source_id: int, atlas_coords: Vector2i
 	fragments.z_index = 1
 	add_child(fragments)
 	fragments.global_position = terrain.to_global(terrain.map_to_local(cell))
+	_kill_enemies_above(cell)
 	var atlas = terrain.tile_set.get_source(source_id) as TileSetAtlasSource
 	var texture_region = atlas.get_tile_texture_region(atlas_coords)
-	var half_width = texture_region.size.x / 2
 	for index in range(2):
 		var sprite = Sprite2D.new()
 		sprite.texture = atlas.get_texture()
 		sprite.region_enabled = true
-		sprite.region_rect = Rect2(
-			Vector2(texture_region.position) + Vector2(index * half_width, 0),
-			Vector2(half_width, texture_region.size.y)
-		)
-		sprite.position = Vector2((index - 0.5) * half_width, 0)
+		sprite.region_rect = Rect2(Vector2(texture_region.position), Vector2(texture_region.size))
+		sprite.scale = FRAGMENT_SCALE
+		sprite.position = Vector2((index - 0.5) * terrain.tile_set.tile_size.x * FRAGMENT_SCALE.x, 0)
 		fragments.add_child(sprite)
 		var start = sprite.position
 		var end = start + Vector2(-12 if index == 0 else 12, 8)
@@ -135,7 +136,8 @@ func _kill_enemies_above(cell: Vector2i) -> void:
 	var block_top = block_center.y - terrain.tile_set.tile_size.y / 2.0
 	for enemy in enemies.get_children():
 		if enemy is Enemy and not enemy.is_dead:
-			if absf(enemy.global_position.x - block_center.x) <= half_width + 8.0 and enemy.global_position.y < block_top:
+			var enemy_height_above_block = block_top - enemy.global_position.y
+			if absf(enemy.global_position.x - block_center.x) <= half_width + 8.0 and enemy_height_above_block >= 0.0 and enemy_height_above_block <= ENEMY_HIT_HEIGHT:
 				enemy.die_from_hit()
 
 func _on_block_activated(reward: StringName, world_position: Vector2, cell: Vector2i) -> void:
