@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://qjxaqkcf1o2l"
-path="res://.godot/imported/background_dungeon1.png-5552335b4edb1122f770f3c25fce525a.ctex"
+uid="uid://b2rm1q0p3862k"
+path="res://.godot/imported/corrente_dungeon.png-edf2739881d9f177a0196a105cf12480.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets Super Mario Bros/Sprites/background_dungeon1.png"
-dest_files=["res://.godot/imported/background_dungeon1.png-5552335b4edb1122f770f3c25fce525a.ctex"]
+source_file="res://Assets Super Mario Bros/Sprites/corrente_dungeon.png"
+dest_files=["res://.godot/imported/corrente_dungeon.png-edf2739881d9f177a0196a105cf12480.ctex"]
 
 [params]
 

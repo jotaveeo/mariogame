@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmcfr2qypvc8c"
-path="res://.godot/imported/background_dungeon3.png-69d018735caedef41bcb75915c15bfd8.ctex"
+uid="uid://bb0gmm6u3duc1"
+path="res://.godot/imported/caixa_dungeon.png-c6271890ddcb56e197dd485c0a886038.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets Super Mario Bros/Sprites/background_dungeon3.png"
-dest_files=["res://.godot/imported/background_dungeon3.png-69d018735caedef41bcb75915c15bfd8.ctex"]
+source_file="res://Assets Super Mario Bros/Sprites/caixa_dungeon.png"
+dest_files=["res://.godot/imported/caixa_dungeon.png-c6271890ddcb56e197dd485c0a886038.ctex"]
 
 [params]
 
