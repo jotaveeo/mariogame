@@ -8,10 +8,12 @@ const POWER_UP_SCENE = preload("res://cenas/power_up.tscn")
 const COIN_POPUP_SCENE = preload("res://cenas/coin_popup.tscn")
 const MYSTERY_TILE_SOURCES = [11, 12, 13]
 const EMPTY_BLOCK_SOURCE: int = 14
+const TERRAIN_BLOCK_SOURCES = [0, 1, 2, 4, 5, 14]
 
 var terrain: TileMapLayer
 var player: Player
 var blocks: Dictionary[Vector2i, MysteryBlock] = {}
+var animated_cells: Dictionary[Vector2i, bool] = {}
 
 func setup(level_terrain: TileMapLayer, level_player: Player) -> void:
 	terrain = level_terrain
@@ -38,9 +40,103 @@ func register_cell(cell: Vector2i) -> void:
 	blocks[cell] = block
 
 func _on_player_hit_block(hit_terrain: TileMapLayer, cell: Vector2i) -> void:
-	if hit_terrain != terrain or not blocks.has(cell):
+	if hit_terrain != terrain or animated_cells.has(cell):
 		return
-	blocks[cell].bump()
+	if blocks.has(cell):
+		blocks[cell].bump()
+		return
+	var source_id = terrain.get_cell_source_id(cell)
+	if not TERRAIN_BLOCK_SOURCES.has(source_id):
+		return
+	var atlas_coords = terrain.get_cell_atlas_coords(cell)
+	var alternative_tile = terrain.get_cell_alternative_tile(cell)
+	if player.player_mode == Player.PlayerMode.SMALL:
+		_bump_terrain_block(cell, source_id, atlas_coords, alternative_tile)
+	elif player.player_mode == Player.PlayerMode.BIG or player.player_mode == Player.PlayerMode.SHOOTING:
+		_break_terrain_block(cell, source_id, atlas_coords)
+
+func _bump_terrain_block(cell: Vector2i, source_id: int, atlas_coords: Vector2i, alternative_tile: int) -> void:
+	animated_cells[cell] = true
+	_kill_enemies_above(cell)
+	var bump = _create_tile_sprite(cell, source_id, atlas_coords)
+	terrain.erase_cell(cell)
+	var original_position = bump.position
+	var tween = create_tween()
+	tween.tween_property(bump, "position", original_position + Vector2(0, -4), 0.08)
+	tween.tween_property(bump, "position", original_position, 0.08)
+	tween.tween_callback(_restore_bumped_block.bind(cell, source_id, atlas_coords, alternative_tile, bump))
+
+func _restore_bumped_block(cell: Vector2i, source_id: int, atlas_coords: Vector2i, alternative_tile: int, bump: Node2D) -> void:
+	terrain.set_cell(cell, source_id, atlas_coords, alternative_tile)
+	animated_cells.erase(cell)
+	bump.queue_free()
+
+func _break_terrain_block(cell: Vector2i, source_id: int, atlas_coords: Vector2i) -> void:
+	animated_cells[cell] = true
+	var fragments = Node2D.new()
+	fragments.name = "TerrainFragments"
+	fragments.z_index = 1
+	add_child(fragments)
+	fragments.global_position = terrain.to_global(terrain.map_to_local(cell))
+	var atlas = terrain.tile_set.get_source(source_id) as TileSetAtlasSource
+	var texture_region = atlas.get_tile_texture_region(atlas_coords)
+	var half_width = texture_region.size.x / 2
+	for index in range(2):
+		var sprite = Sprite2D.new()
+		sprite.texture = atlas.get_texture()
+		sprite.region_enabled = true
+		sprite.region_rect = Rect2(
+			Vector2(texture_region.position) + Vector2(index * half_width, 0),
+			Vector2(half_width, texture_region.size.y)
+		)
+		sprite.position = Vector2((index - 0.5) * half_width, 0)
+		fragments.add_child(sprite)
+		var start = sprite.position
+		var end = start + Vector2(-12 if index == 0 else 12, 8)
+		var arc_height = 18.0
+		create_tween().tween_method(
+			_update_fragment.bind(sprite, start, end, arc_height),
+			0.0,
+			1.0,
+			0.5
+		)
+	terrain.erase_cell(cell)
+	var tween = create_tween()
+	tween.tween_interval(0.5)
+	tween.tween_callback(_finish_fragments.bind(cell, fragments))
+
+func _update_fragment(progress: float, sprite: Sprite2D, start: Vector2, end: Vector2, arc_height: float) -> void:
+	sprite.position = start.lerp(end, progress) + Vector2(0, -4.0 * arc_height * progress * (1.0 - progress))
+
+func _finish_fragments(cell: Vector2i, fragments: Node2D) -> void:
+	animated_cells.erase(cell)
+	fragments.queue_free()
+
+func _create_tile_sprite(cell: Vector2i, source_id: int, atlas_coords: Vector2i) -> Node2D:
+	var atlas = terrain.tile_set.get_source(source_id) as TileSetAtlasSource
+	var block = Node2D.new()
+	block.z_index = 1
+	add_child(block)
+	block.global_position = terrain.to_global(terrain.map_to_local(cell))
+	var sprite = Sprite2D.new()
+	sprite.texture = atlas.get_texture()
+	sprite.region_enabled = true
+	var texture_region = atlas.get_tile_texture_region(atlas_coords)
+	sprite.region_rect = Rect2(Vector2(texture_region.position), Vector2(texture_region.size))
+	block.add_child(sprite)
+	return block
+
+func _kill_enemies_above(cell: Vector2i) -> void:
+	var enemies = get_parent().get_node_or_null("Enemies")
+	if enemies == null:
+		return
+	var block_center = terrain.to_global(terrain.map_to_local(cell))
+	var half_width = terrain.tile_set.tile_size.x / 2.0
+	var block_top = block_center.y - terrain.tile_set.tile_size.y / 2.0
+	for enemy in enemies.get_children():
+		if enemy is Enemy and not enemy.is_dead:
+			if absf(enemy.global_position.x - block_center.x) <= half_width + 8.0 and enemy.global_position.y < block_top:
+				enemy.die_from_hit()
 
 func _on_block_activated(reward: StringName, world_position: Vector2, cell: Vector2i) -> void:
 	blocks.erase(cell)
