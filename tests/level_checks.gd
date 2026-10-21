@@ -29,11 +29,11 @@ func fresh_level(begin_game: bool = true) -> void:
 
 func run_checks() -> void:
 	await fresh_level(false)
-	check(not level.started and get_tree().paused, "Main waits for the Press Start click")
+	check(not level.started and paused, "Main waits for the Press Start click")
 	check(not level.hero.is_physics_processing(), "Player stays still before starting")
-	check(level.hud.get_node("Message").text.contains("PRESS START"), "Start prompt is visible")
+	check(level.get_node("StartBanner").is_visible_in_tree(), "Start prompt is visible")
 	level.start_game()
-	check(level.started and not get_tree().paused, "Starting the game resumes the scene")
+	check(level.started and not paused, "Starting the game resumes the scene")
 	await frames(30)
 	check(level.hero.is_on_floor(), "Player spawn has solid ground")
 	check(level.get_node("Terrain") is TileMapLayer, "Terrain uses TileMapLayer")

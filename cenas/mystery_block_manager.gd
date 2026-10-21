@@ -159,8 +159,14 @@ func _kill_enemies_above(cell: Vector2i) -> void:
 	var block_top = block_center.y - terrain.tile_set.tile_size.y / 2.0
 	for enemy in enemies.get_children():
 		if enemy is Enemy and not enemy.is_dead:
-			var enemy_height_above_block = block_top - enemy.global_position.y
-			if absf(enemy.global_position.x - block_center.x) <= half_width + 8.0 and enemy_height_above_block >= 0.0 and enemy_height_above_block <= ENEMY_HIT_HEIGHT:
+			var collider: CollisionShape2D = enemy.get_node("CollisionShape2D")
+			if collider.disabled or collider.shape == null:
+				continue
+			# Use the feet and width of the actual collider, including shell offsets.
+			var bounds: Rect2 = collider.global_transform * collider.shape.get_rect()
+			var feet_gap = block_top - bounds.end.y
+			var overlaps_block = bounds.end.x > block_center.x - half_width and bounds.position.x < block_center.x + half_width
+			if overlaps_block and feet_gap >= -2.0 and feet_gap <= ENEMY_HIT_HEIGHT:
 				enemy.die_from_hit()
 
 func _on_block_activated(reward: StringName, world_position: Vector2, cell: Vector2i) -> void:

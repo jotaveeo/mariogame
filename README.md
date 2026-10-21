@@ -69,8 +69,8 @@ Referências oficiais:
 
 ## Integração da dungeon
 
-O jogo começa em `cenas/main.tscn`. As duas fases usam limite de **60 segundos**
-e meta de **2.000 pontos**, ajustáveis no Inspector. O bônus de conclusão não
+O jogo começa em `cenas/main.tscn`. A fase lunar usa limite de **60 segundos** e a dungeon de **120 segundos**.
+Ambas exigem **2.000 pontos**, ajustáveis no Inspector. O bônus de conclusão não
 conta para liberar a chegada. A câmera não retorna. Colete a pontuação mínima durante o avanço; se deixar
 pontos para trás, será necessário tentar novamente com R.
 
@@ -103,3 +103,11 @@ Esses testes verificam a preservação das regras principais, recompensas,
 transformações, descarte de projéteis, passagem entre as fases e conclusão da
 dungeon. O teste automático de percurso completo cobre a fase lunar; o caminho
 e a dificuldade da dungeon ainda precisam de validação jogando.
+
+
+Teste de regressão da cabeçada em tijolos (Goomba, Koopa, casco e inimigos
+fora da área de contato):
+
+```sh
+godot --headless --fixed-fps 60 --path . --script res://tests/block_contact_checks.gd
+```

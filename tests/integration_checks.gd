@@ -29,15 +29,15 @@ func open_level(path: String, begin_game: bool = true) -> void:
 
 func run_checks() -> void:
 	await open_level("res://cenas/main.tscn", false)
-	check(not level.started and get_tree().paused, "Main starts locked until Press Start is clicked")
+	check(not level.started and paused, "Main starts locked until Press Start is clicked")
 	check(not level.hero.is_physics_processing(), "Player does not move before Press Start")
-	check(level.hud.get_node("Message").text.contains("PRESS START"), "Start prompt is visible")
+	check(level.get_node("StartBanner").is_visible_in_tree(), "Start prompt is visible")
 	var start_click = InputEventMouseButton.new()
 	start_click.button_index = MOUSE_BUTTON_LEFT
 	start_click.pressed = true
 	var play_area: Area2D = level.get_node("PlayArea") as Area2D
 	play_area.input_event.emit(level.get_viewport(), start_click, 0)
-	check(level.started and not get_tree().paused, "Press Start click begins the game")
+	check(level.started and not paused, "Press Start click begins the game")
 	await frames(30)
 	check(level.time_limit == 60.0 and level.minimum_score == 2000, "Main rules remain one minute and 2000 points")
 	check(level.hero.is_on_floor(), "Main spawn remains valid")
