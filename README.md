@@ -5,6 +5,7 @@ A dungeon e os novos poderes são contribuições de Felipe, integradas à mesma
 base. A fase lunar continua sendo a cena inicial do projeto.
 
 Projeto de plataforma para Godot 4.7. Abra `project.godot` e pressione F5.
+Na tela inicial, clique em **Press Start** para liberar o jogo.
 
 - Setas esquerda/direita: mover.
 - Seta para cima: pular; soltar antes reduz a altura.
@@ -73,9 +74,10 @@ e meta de **2.000 pontos**, ajustáveis no Inspector. O bônus de conclusão nã
 conta para liberar a chegada. A câmera não retorna. Colete a pontuação mínima durante o avanço; se deixar
 pontos para trás, será necessário tentar novamente com R.
 
-Após concluir a fase lunar, pressione **Enter** para entrar na dungeon.
-Cada fase começa com seu próprio tempo, pontuação e jogador. R reinicia a fase
-atual. Também é possível abrir `cenas/dungeon_level.tscn` e usar F6 para testá-la.
+Após concluir a fase lunar, pressione **Enter** para entrar na dungeon; **Esc**
+volta ao menu inicial. Na conclusão da dungeon, **R** reinicia a fase e **Esc**
+volta ao menu. Cada fase começa com seu próprio tempo, pontuação e jogador.
+Também é possível abrir `cenas/dungeon_level.tscn` e usar F6 para testá-la.
 
 `dungeon_level.gd` herda o controlador `GameLevel` de `level.gd`, incluindo
 pontuação mínima, cronômetro, conexão da chegada e interface. Seu layout e
@@ -87,6 +89,7 @@ Contribuições integradas de Felipe:
 - Koopa vira o sprite ao mudar de direção.
 - Blocos misteriosos: fontes 11 (moeda), 12 (cogumelo) e 13 (flor) do TileSet.
 - Cogumelo aumenta Mario; flor permite atirar com Espaço.
+- Golpear um bloco abaixo do cogumelo faz o item quicar e inverter a direção.
 - Dano reduz fogo para grande, grande para pequeno, e então mata o jogador.
 - Power-ups aguardam o fim de uma transformação antes de serem consumidos.
 

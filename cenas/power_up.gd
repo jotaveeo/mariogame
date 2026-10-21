@@ -35,11 +35,17 @@ func _physics_process(delta: float) -> void:
 	if is_on_wall():
 		direction *= -1.0
 	velocity.x = direction * MUSHROOM_SPEED
-	if not is_on_floor():
+	if not is_on_floor() or velocity.y < 0.0:
 		velocity.y += GRAVITY * delta
 	else:
 		velocity.y = 0.0
 	move_and_slide()
+
+func bounce_and_reverse() -> void:
+	if not active or collected or item_type != &"mushroom":
+		return
+	direction *= -1.0
+	velocity.y = -180.0
 
 func _activate() -> void:
 	active = true

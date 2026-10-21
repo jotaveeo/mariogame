@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://ldf8fweos6xc" path="res://Assets Super Mario Bros/Sprites/Hill1.png" id="5_elfaa"]
 [ext_resource type="Texture2D" uid="uid://bbd1cchxb20u2" path="res://Assets Super Mario Bros/Sprites/Bush1.png" id="6_03f8d"]
 [ext_resource type="PackedScene" uid="uid://dp8dkucnjuh5s" path="res://cenas/goomba.tscn" id="12_rq53p"]
+[ext_resource type="Texture2D" uid="uid://dusmiiya04lmb" path="res://Assets Super Mario Bros/Sprites/mouse.png" id="13_elfaa"]
 [ext_resource type="PackedScene" uid="uid://d0f0rqh3poh55" path="res://cenas/koopa.tscn" id="14_46tt2"]
 [ext_resource type="Texture2D" uid="uid://ir6sodu1lnqy" path="res://Assets Super Mario Bros/Sprites/FlagPole.png" id="16_hbnce"]
 [ext_resource type="Texture2D" uid="uid://d2wjjqv82whrs" path="res://Assets Super Mario Bros/Sprites/Flag.png" id="17_2nh74"]
@@ -27,14 +28,18 @@ size = Vector2(16, 176)
 [sub_resource type="RectangleShape2D" id="BoundaryShape"]
 size = Vector2(16, 480)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kghbt"]
+size = Vector2(82, 12)
+
 [node name="main" type="Node2D" unique_id=572419422]
 script = ExtResource("1_level")
 next_level_path = "res://cenas/dungeon_level.tscn"
+start_locked = true
 
 [node name="Sky" parent="." unique_id=1396268922 instance=ExtResource("sky_scene")]
 
 [node name="Player" parent="." unique_id=1186385412 instance=ExtResource("2_22nsn")]
-position = Vector2(48, 196)
+position = Vector2(48, 200)
 
 [node name="StartBanner" type="Sprite2D" parent="." unique_id=295045721]
 position = Vector2(112.99999, 78)
@@ -261,6 +266,12 @@ texture = ExtResource("bush_3")
 z_index = -1
 position = Vector2(3168, 194)
 texture = ExtResource("bush_2")
+
+[node name="Sprite2D" type="Sprite2D" parent="Scenery" unique_id=1067410613]
+position = Vector2(154.00002, 124.000015)
+rotation = -0.7417649
+scale = Vector2(0.04509135, 0.04051283)
+texture = ExtResource("13_elfaa")
 
 [node name="Coins" type="Node2D" parent="." unique_id=25063998]
 
@@ -513,3 +524,9 @@ collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Right" unique_id=1748485825]
 shape = SubResource("BoundaryShape")
+
+[node name="PlayArea" type="Area2D" parent="." unique_id=318739382]
+position = Vector2(114, 118)
+
+[node name="Play" type="CollisionShape2D" parent="PlayArea" unique_id=310038017]
+shape = SubResource("RectangleShape2D_kghbt")

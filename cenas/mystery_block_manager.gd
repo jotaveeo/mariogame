@@ -10,7 +10,7 @@ const MYSTERY_TILE_SOURCES = [11, 12, 13]
 const EMPTY_BLOCK_SOURCE: int = 14
 const BUMPABLE_TERRAIN_SOURCES = [1, 4]
 const BREAKABLE_TERRAIN_SOURCES = [1, 4]
-const ENEMY_HIT_HEIGHT: float = 30.0
+const ENEMY_HIT_HEIGHT: float = 10.0
 const FRAGMENT_SCALE: Vector2 = Vector2(0.5, 0.5)
 
 var terrain: TileMapLayer
@@ -46,17 +46,40 @@ func _on_player_hit_block(hit_terrain: TileMapLayer, cell: Vector2i) -> void:
 	if hit_terrain != terrain or animated_cells.has(cell):
 		return
 	if blocks.has(cell):
-		blocks[cell].bump()
+		var block = blocks[cell]
+		if not block.used:
+			_bounce_mushrooms_above(cell)
+			block.bump()
 		return
 	var source_id = terrain.get_cell_source_id(cell)
 	var atlas_coords = terrain.get_cell_atlas_coords(cell)
 	var alternative_tile = terrain.get_cell_alternative_tile(cell)
 	if player.player_mode == Player.PlayerMode.SMALL:
 		if BUMPABLE_TERRAIN_SOURCES.has(source_id):
+			_bounce_mushrooms_above(cell)
 			_bump_terrain_block(cell, source_id, atlas_coords, alternative_tile)
 	elif player.player_mode == Player.PlayerMode.BIG or player.player_mode == Player.PlayerMode.SHOOTING:
 		if BREAKABLE_TERRAIN_SOURCES.has(source_id):
+			_bounce_mushrooms_above(cell)
 			_break_terrain_block(cell, source_id, atlas_coords)
+
+func _bounce_mushrooms_above(cell: Vector2i) -> void:
+	var block_center = terrain.to_global(terrain.map_to_local(cell))
+	var tile_size = Vector2(terrain.tile_set.tile_size)
+	for child in get_children():
+		if (
+			child is PowerUp
+			and child.item_type == &"mushroom"
+			and child.active
+			and not child.collected
+		):
+			var distance_above = block_center.y - child.global_position.y
+			if (
+				absf(child.global_position.x - block_center.x) <= tile_size.x
+				and distance_above > 0.0
+				and distance_above <= tile_size.y + 8.0
+			):
+				child.bounce_and_reverse()
 
 func _bump_terrain_block(cell: Vector2i, source_id: int, atlas_coords: Vector2i, alternative_tile: int) -> void:
 	animated_cells[cell] = true

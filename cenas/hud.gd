@@ -6,6 +6,9 @@ var notice_time: float = 0.0
 @onready var objective_label: Label = $Objective
 @onready var message_label: Label = $Message
 
+func _ready() -> void:
+	message_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 func update_stats(score: int, coins: int, time_left: float, minimum_score: int) -> void:
 	var seconds_left = maxi(0, ceili(time_left))
 	var minutes: int = seconds_left / 60
@@ -16,10 +19,19 @@ func update_stats(score: int, coins: int, time_left: float, minimum_score: int) 
 
 func show_completion(score: int, has_next_level: bool = false) -> void:
 	notice_time = 0.0
-	message_label.text = "FASE CONCLUÍDA!\nPontos: %d\nR para jogar novamente" % score
-
 	if has_next_level:
-		message_label.text = "FASE CONCLUÍDA!\nPontos: %d\nENTER: próxima fase" % score
+		message_label.text = "FASE CONCLUÍDA!\nPontos: %d\nENTER: próxima fase\nESC: Menu" % score
+	else:
+		message_label.text = "FASE CONCLUÍDA!\nPontos: %d\nR: jogar novamente\nESC: Menu" % score
+
+func show_start_prompt() -> void:
+	score_label.hide()
+	objective_label.hide()
+
+func show_game_hud() -> void:
+	score_label.show()
+	objective_label.show()
+	message_label.text = ""
 
 func show_timeout() -> void:
 	notice_time = 0.0

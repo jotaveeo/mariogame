@@ -4,6 +4,7 @@ extends Node2D
 const POINTS_LABEL_SCENE = preload("res://cenas/points_label.tscn")
 
 @export_file("*.tscn") var next_level_path: String = ""
+@export var start_locked: bool = false
 @export var level_width: int = 3520
 @export_range(1.0, 3600.0, 1.0) var time_limit: float = 60.0
 @export_range(0, 100000, 100) var minimum_score: int = 2000
@@ -15,6 +16,7 @@ const POINTS_LABEL_SCENE = preload("res://cenas/points_label.tscn")
 var score: int = 0
 var coins: int = 0
 var time_left: float = 0.0
+var started: bool = true
 var finished: bool = false
 var enemies: Array[Enemy] = []
 var camera_progress_x: float = 0.0
@@ -25,7 +27,15 @@ var camera_progress_x: float = 0.0
 
 func _ready() -> void:
 	time_left = time_limit
+	started = not start_locked
 	_configure_level()
+	if not started:
+		process_mode = Node.PROCESS_MODE_ALWAYS
+		for node in find_children("*", "", true, false):
+			node.process_mode = Node.PROCESS_MODE_PAUSABLE
+		$PlayArea.process_mode = Node.PROCESS_MODE_ALWAYS
+		$PlayArea.input_event.connect(_on_play_input_event)
+		hero.set_physics_process(false)
 	hero.points_awarded.connect(_award_points)
 	hero.death_finished.connect(_restart)
 	for enemy in $Enemies.get_children():
@@ -44,21 +54,44 @@ func _ready() -> void:
 	camera.limit_right = level_width
 	_update_camera()
 	_update_hud()
+	if not started:
+		hud.show_start_prompt()
+		get_tree().paused = true
 
 func _configure_level() -> void:
 	pass
 
+func start_game() -> void:
+	if started:
+		return
+	started = true
+	get_tree().paused = false
+	hero.set_physics_process(true)
+	hud.show_game_hud()
+
+func _on_play_input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		start_game()
+
 func _unhandled_input(event: InputEvent) -> void:
-	if finished and not next_level_path.is_empty() and event.is_action_pressed("ui_accept") and not event.is_echo():
-		get_viewport().set_input_as_handled()
-		get_tree().change_scene_to_file(next_level_path)
+	if finished:
+		if event.is_action_pressed("ui_cancel") and not event.is_echo():
+			get_viewport().set_input_as_handled()
+			get_tree().paused = false
+			get_tree().change_scene_to_file("res://cenas/main.tscn")
+		elif event.is_action_pressed("ui_accept") and not next_level_path.is_empty() and not event.is_echo():
+			get_viewport().set_input_as_handled()
+			get_tree().change_scene_to_file(next_level_path)
+		elif event.is_action_pressed("restart") and next_level_path.is_empty() and not event.is_echo():
+			get_viewport().set_input_as_handled()
+			_restart()
 		return
 	if event.is_action_pressed("restart") and not event.is_echo():
 		get_viewport().set_input_as_handled()
 		_restart()
 
 func _physics_process(delta: float) -> void:
-	if finished:
+	if not started or finished:
 		return
 	_update_camera()
 	for enemy in enemies:

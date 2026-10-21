@@ -1,6 +1,6 @@
 extends SceneTree
 
-var level: Node2D
+var level: GameLevel
 var failures: int = 0
 
 func _initialize() -> void:
@@ -16,7 +16,7 @@ func frames(count: int) -> void:
 		await physics_frame
 		await process_frame
 
-func fresh_level() -> void:
+func fresh_level(begin_game: bool = true) -> void:
 	if is_instance_valid(level):
 		root.remove_child(level)
 		level.free()
@@ -24,9 +24,16 @@ func fresh_level() -> void:
 	root.add_child(level)
 	current_scene = level
 	await frames(3)
+	if begin_game:
+		level.start_game()
 
 func run_checks() -> void:
-	await fresh_level()
+	await fresh_level(false)
+	check(not level.started and get_tree().paused, "Main waits for the Press Start click")
+	check(not level.hero.is_physics_processing(), "Player stays still before starting")
+	check(level.hud.get_node("Message").text.contains("PRESS START"), "Start prompt is visible")
+	level.start_game()
+	check(level.started and not get_tree().paused, "Starting the game resumes the scene")
 	await frames(30)
 	check(level.hero.is_on_floor(), "Player spawn has solid ground")
 	check(level.get_node("Terrain") is TileMapLayer, "Terrain uses TileMapLayer")

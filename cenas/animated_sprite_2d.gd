@@ -1,8 +1,6 @@
 class_name PlayerAnimatedSprite
 extends AnimatedSprite2D
 
-# Keep the feet at the same height for both 16px and 32px sprites,
-# including the old/new frames shown during a transformation.
 func _ready() -> void:
 	animation_changed.connect(_align_feet)
 	frame_changed.connect(_align_feet)
