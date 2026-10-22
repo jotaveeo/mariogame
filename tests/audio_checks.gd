@@ -35,6 +35,14 @@ func run_checks() -> void:
 	check(level.audio.streams.size() == 16, "All sixteen downloaded WAV files load")
 	for stream in level.audio.streams.values():
 		check(stream.get_length() > 0, "Imported audio has positive duration")
+		var playback = stream.instantiate_playback()
+		playback.start()
+		var peak: float = 0.0
+		for block in range(16):
+			for sample in playback.mix_audio(1.0, 2048):
+				peak = maxf(peak, maxf(absf(sample.x), absf(sample.y)))
+		playback.stop()
+		check(peak > 0.01, "Decoded audio has audible signal: %s (peak=%s)" % [stream.resource_path, peak])
 	await frames(10)
 	check(heard.is_empty() and not level.audio.is_jingle_playing(), "Menu starts silent")
 	level.start_game()

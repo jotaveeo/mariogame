@@ -114,13 +114,15 @@ godot --headless --path . --script res://tests/block_contact_checks.gd
 godot --headless --path . --script res://tests/audio_checks.gd
 ```
 
-As verificações cobrem movimentação, coleta, pontuação, dano, cascos, poderes, menu, transição entre fases, cronômetro e contatos dos inimigos com os blocos. O teste de percurso automatizado da fase lunar desativa os inimigos para verificar a geometria separadamente dos testes de combate.
+As verificações cobrem movimentação, coleta, pontuação, dano, cascos, poderes, menu, transição entre fases, cronômetro e contatos dos inimigos com os blocos. O teste de áudio também decodifica os clipes e verifica a amplitude do sinal,
+além de conferir o acionamento dos eventos. O teste de percurso automatizado
+da fase lunar desativa os inimigos para verificar a geometria separadamente dos testes de combate.
 
 ## Áudio
 
 Os 16 arquivos WAV fornecidos estão em `audio/`, vinculados diretamente aos
 nós `AudioStreamPlayer` da cena `cenas/level_audio.tscn`. Cada fase possui uma
-instância `Audio`, editável pelo Inspector. A importação normaliza o volume dos clipes para manter os efeitos audíveis.
+instância `Audio`, editável pelo Inspector. Os clipes usam WAV PCM de 8 bits, compatível com os efeitos do projeto de referência Space Invaders; a importação normaliza o volume.
 A reprodução acompanha os
 eventos das duas fases; diferentes efeitos podem tocar ao mesmo tempo. Na morte
 ou no fim do tempo, o reinício aguarda a animação e o áudio terminarem.
