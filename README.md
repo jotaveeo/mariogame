@@ -1,113 +1,122 @@
-# Marioatt
+# Space & Dungeon
 
-A versão principal é a fase lunar original da `main`, desenvolvida por Jotaveeo.
-A dungeon e os novos poderes são contribuições de Felipe, integradas à mesma
-base. A fase lunar continua sendo a cena inicial do projeto.
+**Jogo de plataforma 2D desenvolvido em equipe como atividade acadêmica, utilizando Godot 4.7 e GDScript.**
 
-Projeto de plataforma para Godot 4.7. Abra `project.godot` e pressione F5.
-Na tela inicial, clique em **Press Start** para liberar o jogo.
+Inspirado nas mecânicas clássicas de Super Mario Bros., o projeto apresenta duas fases: uma superfície lunar e uma dungeon. O jogador deve superar obstáculos, enfrentar inimigos e coletar pontos para alcançar a chegada antes do tempo acabar.
 
-- Setas esquerda/direita: mover.
-- Seta para cima: pular; soltar antes reduz a altura.
-- R: reiniciar (ação `restart` no InputMap).
+## Integrantes
 
-## Editar a fase
+| Integrante | Principais contribuições |
+| --- | --- |
+| JOÃO VITOR OLIVEIRA | Fase lunar, ambientação espacial, organização da base principal e integração das versões. |
+| FELIPE CLEMENTE DA SILVA | Dungeon, blocos interativos, menu inicial e melhorias nas animações. |
 
-Abra `cenas/main.tscn` no editor 2D. Selecione `Terrain` para pintar ou apagar
-blocos no TileMapLayer. O TileSet compartilhado está em
-`resources/level_tileset.tres`, com colisões de chão, tijolo e bloco rígido.
+A versão final reúne as contribuições dos dois integrantes na branch `main`.
 
-Duplique instâncias em `Coins` e `Enemies` para adicionar moedas e inimigos.
-Mantenha cada entidade dentro do respectivo nó: a fase conecta seus sinais em
-`_ready()`. Edite `coin.tscn`, `goomba.tscn` ou `koopa.tscn` para mudar todas as
-instâncias. A interface está em `hud.tscn`.
+## Como executar
 
-`Finish/Goal` define a área de chegada. Ao mudar o tamanho do mapa, ajuste
-`level_width`, as paredes em `Boundaries` e a chegada. `time_limit`,
-`fall_limit` e `activation_distance` são configuráveis no nó principal.
+**Requisito:** Godot Engine 4.7, com suporte a GDScript. O projeto utiliza o renderizador Compatibility.
 
-## Responsabilidades
+1. Clone ou baixe este repositório.
+2. Abra o Godot, selecione **Importar** e escolha o arquivo `project.godot`.
+3. Aguarde a importação dos recursos e pressione **F5** para executar o projeto.
+4. Clique em **Press Start** na tela inicial para começar.
 
-- `level.gd`: tempo, pontuação, conexão de eventos, câmera e reinício.
-- `player.gd`: movimento, contato com inimigos e animação de morte; emite
-  `points_awarded` e `death_finished`, sem recarregar a cena por conta própria.
-- `enemy.gd`: movimento com CharacterBody2D; colisão física somente com o
-  terreno. `Hitbox` é uma Area2D para contato com jogador e outros inimigos.
-- `koopa.gd`: transformação, chute e parada do casco.
-- `coin.gd`: coleta única e sinal `collected`.
-- `hud.gd`: apresentação dos valores e da conclusão.
+Para abrir pelo terminal, com o executável Godot disponível no PATH:
 
-Os inimigos começam inativos e são ativados pela proximidade do jogador.
-Eles não são apagados apenas por sair da câmera. A câmera só avança: Mario
-pode andar para a esquerda dentro da tela, mas não voltar às áreas que ficaram
-para trás.
-O jogador e os inimigos avisam a fase quando há pontos; a fase cria o efeito
-visual dentro de `Effects`. Entidades não dependem de `current_scene`.
+```sh
+git clone https://github.com/jotaveeo/mariogame.git
+cd mariogame
+godot --editor --path .
+```
 
-## Verificação automatizada
+## Objetivo e regras
 
-Com o executável Godot no PATH:
+| Fase | Cenário | Limite de tempo | Pontuação mínima |
+| --- | --- | --- | --- |
+| 1 | Superfície lunar | 1 minuto | 2.000 pontos |
+| 2 | Dungeon | 2 minutos | 2.000 pontos |
+
+- Atingir a pontuação mínima e alcançar a bandeira antes de o cronômetro zerar.
+- A câmera avança somente para a direita. É possível recuar dentro da tela, mas não retornar às áreas que ficaram para trás.
+- Ao chegar sem pontos suficientes, a interface informa quanto falta. As oportunidades deixadas para trás não podem ser recuperadas; **R** permite tentar novamente.
+- Cair no vazio, esgotar o tempo ou receber dano na forma pequena causa a morte e o reinício da fase.
+- Após concluir a fase lunar, **Enter** inicia a dungeon. Cada fase começa com seu próprio jogador, pontuação e cronômetro.
+- O bônus de conclusão é concedido somente depois de cumprir a pontuação mínima.
+
+### Pontuação
+
+| Ação | Pontos |
+| --- | --- |
+| Coletar moeda, inclusive de bloco de recompensa | 200 |
+| Derrotar inimigo ou pisar no Koopa para transformá-lo em casco | 100 |
+| Concluir a fase | 1.000 + 10 por segundo restante |
+
+## Controles
+
+| Ação | Controle |
+| --- | --- |
+| Iniciar o jogo | Clique em **Press Start** |
+| Mover para a esquerda / direita | **← / →** ou **A / D** |
+| Pular | **↑** ou **W** |
+| Controlar a altura do salto | Soltar o botão de pulo antes para saltar mais baixo |
+| Atirar, após obter a flor | **Espaço** |
+| Reiniciar durante a partida | **R** |
+| Avançar após concluir a primeira fase | **Enter** |
+| Reiniciar após concluir a dungeon | **R** |
+| Voltar ao menu após concluir uma fase | **Esc** |
+
+## Mecânicas implementadas
+
+- **Movimentação e colisões:** aceleração, desaceleração, salto com altura variável e limites de câmera.
+- **Inimigos:** Goombas e Koopas, com patrulha, mudança de direção e derrota por pisão.
+- **Casco do Koopa:** pode ser chutado, parado com um pisão e usado para atingir outros inimigos; causa dano ao jogador por contato lateral enquanto se move.
+- **Cogumelo:** transforma o jogador pequeno em grande. Golpear o bloco abaixo do item faz o cogumelo quicar e inverter a direção.
+- **Flor:** concede o poder de lançar bolas de fogo que ricocheteiam no chão e eliminam inimigos.
+- **Dano e transformação:** perder um poder reduz a forma de fogo para grande, e de grande para pequena, antes de causar a morte.
+- **Blocos de recompensa:** liberam moeda, cogumelo ou flor, com conteúdo predeterminado.
+- **Tijolos interativos:** o jogador pequeno faz o tijolo subir levemente; grande ou com poder de fogo pode quebrá-lo. O golpe também atinge inimigos sobre o bloco.
+- **Apresentação:** céu estrelado, decoração variada, animações de moedas, efeitos de pontuação e interface com tempo, moedas e progresso da meta.
+- **Fluxo de jogo:** menu inicial, transição entre fases, conclusão e reinício.
+
+## Organização técnica
+
+O projeto utiliza cenas reutilizáveis e sinais para comunicar eventos entre o jogador, os inimigos e o controlador da fase. O terreno é editado com `TileMapLayer` e um `TileSet` compartilhado.
+
+| Arquivo ou pasta | Responsabilidade |
+| --- | --- |
+| `project.godot` | Configuração do projeto e mapeamento dos controles. |
+| `cenas/main.tscn` | Cena inicial, menu e fase lunar. |
+| `cenas/dungeon_level.tscn` | Layout da dungeon. |
+| `cenas/level.gd` | Controlador compartilhado: pontuação, tempo, câmera e fluxo da partida. |
+| `cenas/dungeon_level.gd` | Especialização do controlador para os limites da dungeon. |
+| `cenas/player.gd` | Movimento, poderes, dano e interações do jogador. |
+| `cenas/enemy.gd`, `goomba.gd` e `koopa.gd` | Comportamento dos inimigos. |
+| `cenas/mystery_block_manager.gd` | Recompensas, cabeçadas e destruição de tijolos. |
+| `cenas/power_up.gd` e `fireball.gd` | Itens de poder e projéteis. |
+| `cenas/hud.tscn` e `hud.gd` | Interface e mensagens da partida. |
+| `resources/level_tileset.tres` | Blocos, colisões e dados das recompensas. |
+| `Assets Super Mario Bros/` | Recursos gráficos, fontes e demais arquivos de apoio. |
+| `tests/` | Verificações automatizadas. |
+
+Para inspecionar uma fase separadamente, abra sua cena e pressione **F6**. Selecione o nó `Terrain` para editar o mapa. Os blocos de recompensa usam as fontes **11 — moeda**, **12 — cogumelo** e **13 — flor** do TileSet.
+
+## Verificações automatizadas
+
+Na raiz do projeto, com o Godot disponível no PATH:
 
 ```sh
 godot --headless --fixed-fps 60 --path . --script res://tests/level_checks.gd
-```
-
-O teste verifica colisão inicial, instâncias reutilizáveis, moedas, pisão,
-chute/parada/dano do casco, casco atingindo inimigo, queda, tempo esgotado e
-limites físicos. Também percorre a fase até a chegada com controles simulados,
-desativando inimigos somente nesse teste para isolar a geometria.
-
-Isso não substitui avaliação visual e de dificuldade por uma pessoa.
-
-Referências oficiais:
-
-- https://docs.godotengine.org/en/4.7/tutorials/best_practices/scene_organization.html
-- https://docs.godotengine.org/en/4.7/tutorials/2d/using_tilemaps.html
-- https://docs.godotengine.org/en/4.7/tutorials/physics/using_character_body_2d.html
-- https://docs.godotengine.org/en/4.7/tutorials/inputs/input_examples.html
-
-
-## Integração da dungeon
-
-O jogo começa em `cenas/main.tscn`. A fase lunar usa limite de **60 segundos** e a dungeon de **120 segundos**.
-Ambas exigem **2.000 pontos**, ajustáveis no Inspector. O bônus de conclusão não
-conta para liberar a chegada. A câmera não retorna. Colete a pontuação mínima durante o avanço; se deixar
-pontos para trás, será necessário tentar novamente com R.
-
-Após concluir a fase lunar, pressione **Enter** para entrar na dungeon; **Esc**
-volta ao menu inicial. Na conclusão da dungeon, **R** reinicia a fase e **Esc**
-volta ao menu. Cada fase começa com seu próprio tempo, pontuação e jogador.
-Também é possível abrir `cenas/dungeon_level.tscn` e usar F6 para testá-la.
-
-`dungeon_level.gd` herda o controlador `GameLevel` de `level.gd`, incluindo
-pontuação mínima, cronômetro, conexão da chegada e interface. Seu layout e
-recursos visuais ficam na cena da dungeon, sem substituir a fase principal.
-
-Contribuições integradas de Felipe:
-
-- WASD como alternativa às setas e moedas animadas.
-- Koopa vira o sprite ao mudar de direção.
-- Blocos misteriosos: fontes 11 (moeda), 12 (cogumelo) e 13 (flor) do TileSet.
-- Cogumelo aumenta Mario; flor permite atirar com Espaço.
-- Golpear um bloco abaixo do cogumelo faz o item quicar e inverter a direção.
-- Dano reduz fogo para grande, grande para pequeno, e então mata o jogador.
-- Power-ups aguardam o fim de uma transformação antes de serem consumidos.
-
-Testes adicionais de integração:
-
-```sh
 godot --headless --fixed-fps 60 --path . --script res://tests/integration_checks.gd
-```
-
-Esses testes verificam a preservação das regras principais, recompensas,
-transformações, descarte de projéteis, passagem entre as fases e conclusão da
-dungeon. O teste automático de percurso completo cobre a fase lunar; o caminho
-e a dificuldade da dungeon ainda precisam de validação jogando.
-
-
-Teste de regressão da cabeçada em tijolos (Goomba, Koopa, casco e inimigos
-fora da área de contato):
-
-```sh
 godot --headless --fixed-fps 60 --path . --script res://tests/block_contact_checks.gd
 ```
+
+As verificações cobrem movimentação, coleta, pontuação, dano, cascos, poderes, menu, transição entre fases, cronômetro e contatos dos inimigos com os blocos. O teste de percurso automatizado da fase lunar desativa os inimigos para verificar a geometria separadamente dos testes de combate.
+
+## Referências
+
+- **Super Mario Bros.** — referência de mecânicas e dos personagens presentes nos recursos visuais utilizados na atividade.
+- [Documentação do Godot 4.7](https://docs.godotengine.org/en/4.7/)
+- [Organização de cenas](https://docs.godotengine.org/en/4.7/tutorials/best_practices/scene_organization.html)
+- [Mapas com TileMapLayer](https://docs.godotengine.org/en/4.7/tutorials/2d/using_tilemaps.html)
+- [Movimento com CharacterBody2D](https://docs.godotengine.org/en/4.7/tutorials/physics/using_character_body_2d.html)
