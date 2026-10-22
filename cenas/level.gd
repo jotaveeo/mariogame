@@ -1,6 +1,7 @@
 class_name GameLevel
 extends Node2D
 
+const AUDIO_SCENE = preload("res://cenas/level_audio.tscn")
 const POINTS_LABEL_SCENE = preload("res://cenas/points_label.tscn")
 
 @export_file("*.tscn") var next_level_path: String = ""
@@ -20,6 +21,9 @@ var started: bool = true
 var finished: bool = false
 var enemies: Array[Enemy] = []
 var camera_progress_x: float = 0.0
+var time_warning_played: bool = false
+var death_animation_finished: bool = false
+var audio: LevelAudio
 
 @onready var hero: Player = $Player
 @onready var camera: Camera2D = $Camera2D
@@ -36,12 +40,17 @@ func _ready() -> void:
 		$PlayArea.process_mode = Node.PROCESS_MODE_ALWAYS
 		$PlayArea.input_event.connect(_on_play_input_event)
 		hero.set_physics_process(false)
+	audio = AUDIO_SCENE.instantiate()
+	add_child(audio)
+	audio.jingle_finished.connect(_on_jingle_finished)
+	hero.sound_requested.connect(_play_sound)
 	hero.points_awarded.connect(_award_points)
-	hero.death_finished.connect(_restart)
+	hero.death_finished.connect(_on_death_finished)
 	for enemy in $Enemies.get_children():
 		if enemy is Enemy:
 			enemies.append(enemy)
 			enemy.points_awarded.connect(_award_points)
+			enemy.sound_requested.connect(_play_sound)
 			enemy.set_physics_process(false)
 	for coin in $Coins.get_children():
 		coin.collected.connect(_collect_coin)
@@ -50,6 +59,7 @@ func _ready() -> void:
 	manager.name = "MysteryBlockManager"
 	add_child(manager)
 	manager.coin_collected.connect(_collect_coin)
+	manager.sound_requested.connect(_play_sound)
 	manager.setup($Terrain, hero)
 	camera.limit_right = level_width
 	_update_camera()
@@ -100,6 +110,9 @@ func _physics_process(delta: float) -> void:
 				enemy.set_physics_process(true)
 	if not hero.is_dead:
 		time_left = maxf(0, time_left - delta)
+		if not time_warning_played and time_left > 0 and time_left <= 20.0:
+			time_warning_played = true
+			_play_sound(&"warning")
 		if time_left <= 0:
 			hud.show_timeout()
 			hero.die()
@@ -118,6 +131,7 @@ func _update_camera() -> void:
 	hero.minimum_x = camera_progress_x - half_width + left_screen_margin
 
 func _collect_coin() -> void:
+	_play_sound(&"coin")
 	coins += 1
 	score += 200
 	_update_hud()
@@ -150,3 +164,21 @@ func _finish(body: Node2D) -> void:
 			enemy.set_physics_process(false)
 	_update_hud()
 	hud.show_completion(score, not next_level_path.is_empty())
+	audio.play(&"stage_clear" if not next_level_path.is_empty() else &"world_clear")
+
+func _play_sound(sound: StringName) -> void:
+	if hero.is_dead and sound != &"death":
+		return
+	if finished:
+		return
+	audio.play(&"game_over" if sound == &"death" and time_left <= 0 else sound)
+
+func _on_death_finished() -> void:
+	# Both the animation and its audio must finish before replacing the scene.
+	death_animation_finished = true
+	if not audio.is_jingle_playing():
+		_restart()
+
+func _on_jingle_finished() -> void:
+	if death_animation_finished and hero.is_dead:
+		_restart()

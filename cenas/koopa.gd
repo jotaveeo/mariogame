@@ -22,6 +22,7 @@ func die() -> void:
 	in_a_shell = true
 
 func on_stomp(player_position: Vector2) -> void:
+	sound_requested.emit(&"kick")
 	var movement_direction = 1 if player_position.x <= global_position.x else -1
 	horizontal_speed = -movement_direction * slide_speed
 	avoid_ledges = false

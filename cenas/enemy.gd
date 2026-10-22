@@ -1,6 +1,7 @@
 class_name Enemy
 extends CharacterBody2D
 
+signal sound_requested(sound: StringName)
 signal points_awarded(points: int, location: Vector2)
 
 @export var horizontal_speed: float = 20.0
@@ -48,6 +49,7 @@ func die_from_hit() -> void:
 	if is_dead:
 		return
 	disable_interactions()
+	sound_requested.emit(&"kick")
 	points_awarded.emit(100, global_position)
 	rotation_degrees = 180
 	var die_tween = create_tween()

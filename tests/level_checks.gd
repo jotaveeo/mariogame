@@ -118,6 +118,10 @@ func run_checks() -> void:
 	check(level.score > level.minimum_score, "Completion bonus is awarded after eligibility")
 	await check_traversal()
 	print("Checks completed; failures: ", failures)
+	level.audio.stop_all()
+	root.remove_child(level)
+	level.free()
+	await frames(3)
 	quit(1 if failures else 0)
 
 func check_traversal() -> void:

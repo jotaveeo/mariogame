@@ -59,4 +59,8 @@ func run_checks() -> void:
 				enemy.queue_free()
 				await frames(35)
 	print("Block contact checks completed; failures: ", failures)
+	level.audio.stop_all()
+	root.remove_child(level)
+	level.free()
+	await frames(3)
 	quit(1 if failures else 0)

@@ -212,4 +212,8 @@ func run_checks() -> void:
 	level = current_scene
 	check(level.scene_file_path == "res://cenas/main.tscn" and not level.started, "Dungeon menu returns to the locked main screen")
 	print("Integration checks completed; failures: ", failures)
+	level.audio.stop_all()
+	root.remove_child(level)
+	level.free()
+	await frames(3)
 	quit(1 if failures else 0)

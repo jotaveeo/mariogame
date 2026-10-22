@@ -77,6 +77,7 @@ godot --editor --path .
 - **Blocos de recompensa:** liberam moeda, cogumelo ou flor, com conteúdo predeterminado.
 - **Tijolos interativos:** o jogador pequeno faz o tijolo subir levemente; grande ou com poder de fogo pode quebrá-lo. O golpe também atinge inimigos sobre o bloco.
 - **Apresentação:** céu estrelado, decoração variada, animações de moedas, efeitos de pontuação e interface com tempo, moedas e progresso da meta.
+- **Áudio:** efeitos de pulo, moedas, combate, cabeçadas, destruição de tijolos, tiros e perda de poder; músicas de morte, tempo esgotado, aviso dos últimos 20 segundos e conclusão.
 - **Fluxo de jogo:** menu inicial, transição entre fases, conclusão e reinício.
 
 ## Organização técnica
@@ -97,6 +98,7 @@ O projeto utiliza cenas reutilizáveis e sinais para comunicar eventos entre o j
 | `cenas/hud.tscn` e `hud.gd` | Interface e mensagens da partida. |
 | `resources/level_tileset.tres` | Blocos, colisões e dados das recompensas. |
 | `Assets Super Mario Bros/` | Recursos gráficos, fontes e demais arquivos de apoio. |
+| `audio/` e `cenas/level_audio.gd` | Efeitos e músicas de eventos, com canais separados e volume configurável. |
 | `tests/` | Verificações automatizadas. |
 
 Para inspecionar uma fase separadamente, abra sua cena e pressione **F6**. Selecione o nó `Terrain` para editar o mapa. Os blocos de recompensa usam as fontes **11 — moeda**, **12 — cogumelo** e **13 — flor** do TileSet.
@@ -106,12 +108,24 @@ Para inspecionar uma fase separadamente, abra sua cena e pressione **F6**. Selec
 Na raiz do projeto, com o Godot disponível no PATH:
 
 ```sh
-godot --headless --fixed-fps 60 --path . --script res://tests/level_checks.gd
-godot --headless --fixed-fps 60 --path . --script res://tests/integration_checks.gd
-godot --headless --fixed-fps 60 --path . --script res://tests/block_contact_checks.gd
+godot --headless --path . --script res://tests/level_checks.gd
+godot --headless --path . --script res://tests/integration_checks.gd
+godot --headless --path . --script res://tests/block_contact_checks.gd
+godot --headless --path . --script res://tests/audio_checks.gd
 ```
 
 As verificações cobrem movimentação, coleta, pontuação, dano, cascos, poderes, menu, transição entre fases, cronômetro e contatos dos inimigos com os blocos. O teste de percurso automatizado da fase lunar desativa os inimigos para verificar a geometria separadamente dos testes de combate.
+
+## Áudio
+
+Os 16 arquivos WAV fornecidos estão em `audio/`. A reprodução acompanha os
+eventos das duas fases; diferentes efeitos podem tocar ao mesmo tempo. Na morte
+ou no fim do tempo, o reinício aguarda a animação e o áudio terminarem.
+
+A coleta e o surgimento de cogumelos e flores também possuem efeitos próprios.
+Não há trilha contínua de fundo.
+
+Fonte dos clipes: [The Mushroom Kingdom — Super Mario Bros. (NES)](https://themushroomkingdom.net/media/smb/wav), com contribuições creditadas a Deezer na página.
 
 ## Referências
 

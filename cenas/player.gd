@@ -8,6 +8,7 @@ enum PlayerMode {
 }
 
 signal points_awarded(points: int, location: Vector2)
+signal sound_requested(sound: StringName)
 signal death_finished
 signal mystery_block_hit(terrain: TileMapLayer, cell: Vector2i)
 
@@ -59,6 +60,7 @@ func _physics_process(delta: float) -> void:
 		
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jump_velocity
+		sound_requested.emit(&"jump_small" if player_mode == PlayerMode.SMALL else &"jump_super")
 		
 	if Input.is_action_just_released("jump") and velocity.y < 0:
 		velocity.y *= 0.5
@@ -107,6 +109,7 @@ func handle_enemy_collision(enemy: Enemy) -> void:
 		if is_stomping:
 			if enemy.horizontal_speed != 0:
 				enemy.stop_shell()
+				sound_requested.emit(&"stomp")
 			else:
 				enemy.on_stomp(global_position)
 			on_enemy_stomped()
@@ -116,6 +119,7 @@ func handle_enemy_collision(enemy: Enemy) -> void:
 			take_damage()
 	elif is_stomping:
 		enemy.die()
+		sound_requested.emit(&"stomp")
 		on_enemy_stomped()
 		points_awarded.emit(100, enemy.global_position)
 	else:
@@ -125,6 +129,7 @@ func die() -> void:
 	if is_dead:
 		return
 	is_dead = true
+	sound_requested.emit(&"death")
 	animated_sprite_2d.play("small_death")
 	set_physics_process(false)
 	set_deferred("collision_layer", 0)
@@ -161,6 +166,7 @@ func take_damage() -> void:
 func _set_player_mode(new_mode: PlayerMode) -> void:
 	if player_mode == new_mode:
 		return
+	sound_requested.emit(&"power_down" if new_mode < player_mode else &"power_up")
 	transformation_from_mode = player_mode
 	player_mode = new_mode
 	transformation_time_left = TRANSFORMATION_DURATION
@@ -191,6 +197,7 @@ func _shoot_fireball() -> void:
 	var direction = -1 if animated_sprite_2d.scale.x < 0.0 else 1
 	get_parent().add_child(fireball)
 	fireball.setup(direction, global_position + Vector2(12.0 * direction, -2.0))
+	sound_requested.emit(&"fireball")
 	shoot_cooldown = 0.35
 	animated_sprite_2d.play("shooting")
 

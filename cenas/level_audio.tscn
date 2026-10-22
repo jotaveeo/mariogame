@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://cenas/level_audio.gd" id="1_audio"]
+
+[node name="Audio" type="Node"]
+process_mode = 1
+script = ExtResource("1_audio")
+
+[node name="Jingle" type="AudioStreamPlayer" parent="."]

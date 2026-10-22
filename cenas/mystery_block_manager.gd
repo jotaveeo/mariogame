@@ -1,6 +1,7 @@
 class_name MysteryBlockManager
 extends Node2D
 
+signal sound_requested(sound: StringName)
 signal coin_collected
 
 const MYSTERY_BLOCK_SCENE = preload("res://cenas/mystery_block.tscn")
@@ -49,6 +50,7 @@ func _on_player_hit_block(hit_terrain: TileMapLayer, cell: Vector2i) -> void:
 		var block = blocks[cell]
 		if not block.used:
 			_bounce_mushrooms_above(cell)
+			sound_requested.emit(&"bump")
 			block.bump()
 		return
 	var source_id = terrain.get_cell_source_id(cell)
@@ -62,6 +64,8 @@ func _on_player_hit_block(hit_terrain: TileMapLayer, cell: Vector2i) -> void:
 		if BREAKABLE_TERRAIN_SOURCES.has(source_id):
 			_bounce_mushrooms_above(cell)
 			_break_terrain_block(cell, source_id, atlas_coords)
+	if source_id >= 0 and not BUMPABLE_TERRAIN_SOURCES.has(source_id):
+		sound_requested.emit(&"bump")
 
 func _bounce_mushrooms_above(cell: Vector2i) -> void:
 	var block_center = terrain.to_global(terrain.map_to_local(cell))
@@ -82,6 +86,7 @@ func _bounce_mushrooms_above(cell: Vector2i) -> void:
 				child.bounce_and_reverse()
 
 func _bump_terrain_block(cell: Vector2i, source_id: int, atlas_coords: Vector2i, alternative_tile: int) -> void:
+	sound_requested.emit(&"bump")
 	animated_cells[cell] = true
 	_kill_enemies_above(cell)
 	var bump = _create_tile_sprite(cell, source_id, atlas_coords)
@@ -98,6 +103,7 @@ func _restore_bumped_block(cell: Vector2i, source_id: int, atlas_coords: Vector2
 	bump.queue_free()
 
 func _break_terrain_block(cell: Vector2i, source_id: int, atlas_coords: Vector2i) -> void:
+	sound_requested.emit(&"brick_break")
 	animated_cells[cell] = true
 	var fragments = Node2D.new()
 	fragments.name = "TerrainFragments"
@@ -178,6 +184,7 @@ func _on_block_activated(reward: StringName, world_position: Vector2, cell: Vect
 		add_child(popup)
 		coin_collected.emit()
 		return
+	sound_requested.emit(&"power_up_appears")
 	var power_up: PowerUp = POWER_UP_SCENE.instantiate()
 	power_up.setup(reward)
 	power_up.position = to_local(world_position)
