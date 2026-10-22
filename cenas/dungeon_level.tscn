@@ -23,6 +23,8 @@
 [ext_resource type="Texture2D" uid="uid://bg1rtcuf4kjtn" path="res://Assets Super Mario Bros/Sprites/carrinhoDeMina_dungeon.png" id="21_awoyd"]
 [ext_resource type="Texture2D" uid="uid://bb0gmm6u3duc1" path="res://Assets Super Mario Bros/Sprites/caixa_dungeon.png" id="22_0f73s"]
 
+[ext_resource type="PackedScene" path="res://cenas/level_audio.tscn" id="game_audio"]
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o4bfx"]
 size = Vector2(16, 176)
 
@@ -770,3 +772,5 @@ z_index = -1
 position = Vector2(2979.0002, 106.00001)
 scale = Vector2(0.0075225704, 0.007720949)
 texture = ExtResource("20_f8u3o")
+
+[node name="Audio" parent="." instance=ExtResource("game_audio")]

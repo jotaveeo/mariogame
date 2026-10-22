@@ -118,7 +118,10 @@ As verificações cobrem movimentação, coleta, pontuação, dano, cascos, pode
 
 ## Áudio
 
-Os 16 arquivos WAV fornecidos estão em `audio/`. A reprodução acompanha os
+Os 16 arquivos WAV fornecidos estão em `audio/`, vinculados diretamente aos
+nós `AudioStreamPlayer` da cena `cenas/level_audio.tscn`. Cada fase possui uma
+instância `Audio`, editável pelo Inspector. A importação normaliza o volume dos clipes para manter os efeitos audíveis.
+A reprodução acompanha os
 eventos das duas fases; diferentes efeitos podem tocar ao mesmo tempo. Na morte
 ou no fim do tempo, o reinício aguarda a animação e o áudio terminarem.
 

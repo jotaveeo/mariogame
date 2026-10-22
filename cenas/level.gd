@@ -1,7 +1,6 @@
 class_name GameLevel
 extends Node2D
 
-const AUDIO_SCENE = preload("res://cenas/level_audio.tscn")
 const POINTS_LABEL_SCENE = preload("res://cenas/points_label.tscn")
 
 @export_file("*.tscn") var next_level_path: String = ""
@@ -40,8 +39,7 @@ func _ready() -> void:
 		$PlayArea.process_mode = Node.PROCESS_MODE_ALWAYS
 		$PlayArea.input_event.connect(_on_play_input_event)
 		hero.set_physics_process(false)
-	audio = AUDIO_SCENE.instantiate()
-	add_child(audio)
+	audio = $Audio
 	audio.jingle_finished.connect(_on_jingle_finished)
 	hero.sound_requested.connect(_play_sound)
 	hero.points_awarded.connect(_award_points)

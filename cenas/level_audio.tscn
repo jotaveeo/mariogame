@@ -1,9 +1,89 @@
 [gd_scene format=3]
-
-[ext_resource type="Script" path="res://cenas/level_audio.gd" id="1_audio"]
+[ext_resource type="Script" path="res://cenas/level_audio.gd" id="script"]
+[ext_resource type="AudioStream" path="res://audio/smb_jump-small.wav" id="jump_small"]
+[ext_resource type="AudioStream" path="res://audio/smb_jump-super.wav" id="jump_super"]
+[ext_resource type="AudioStream" path="res://audio/smb_coin.wav" id="coin"]
+[ext_resource type="AudioStream" path="res://audio/smb_kick.wav" id="kick"]
+[ext_resource type="AudioStream" path="res://audio/smb_stomp.wav" id="stomp"]
+[ext_resource type="AudioStream" path="res://audio/smb_bump.wav" id="bump"]
+[ext_resource type="AudioStream" path="res://audio/smb_breakblock.wav" id="brick_break"]
+[ext_resource type="AudioStream" path="res://audio/smb_pipe.wav" id="power_down"]
+[ext_resource type="AudioStream" path="res://audio/smb_fireball.wav" id="fireball"]
+[ext_resource type="AudioStream" path="res://audio/smb_powerup.wav" id="power_up"]
+[ext_resource type="AudioStream" path="res://audio/smb_powerup_appears.wav" id="power_up_appears"]
+[ext_resource type="AudioStream" path="res://audio/smb_mariodie.wav" id="death"]
+[ext_resource type="AudioStream" path="res://audio/smb_gameover.wav" id="game_over"]
+[ext_resource type="AudioStream" path="res://audio/smb_warning.wav" id="warning"]
+[ext_resource type="AudioStream" path="res://audio/smb_stage_clear.wav" id="stage_clear"]
+[ext_resource type="AudioStream" path="res://audio/smb_world_clear.wav" id="world_clear"]
 
 [node name="Audio" type="Node"]
-process_mode = 1
-script = ExtResource("1_audio")
+script = ExtResource("script")
 
-[node name="Jingle" type="AudioStreamPlayer" parent="."]
+[node name="Effects" type="Node" parent="."]
+
+[node name="Jingles" type="Node" parent="."]
+
+[node name="jump_small" type="AudioStreamPlayer" parent="Effects"]
+stream = ExtResource("jump_small")
+volume_db = 0.0
+
+[node name="jump_super" type="AudioStreamPlayer" parent="Effects"]
+stream = ExtResource("jump_super")
+volume_db = 0.0
+
+[node name="coin" type="AudioStreamPlayer" parent="Effects"]
+stream = ExtResource("coin")
+volume_db = 0.0
+
+[node name="kick" type="AudioStreamPlayer" parent="Effects"]
+stream = ExtResource("kick")
+volume_db = 0.0
+
+[node name="stomp" type="AudioStreamPlayer" parent="Effects"]
+stream = ExtResource("stomp")
+volume_db = 0.0
+
+[node name="bump" type="AudioStreamPlayer" parent="Effects"]
+stream = ExtResource("bump")
+volume_db = 0.0
+
+[node name="brick_break" type="AudioStreamPlayer" parent="Effects"]
+stream = ExtResource("brick_break")
+volume_db = 0.0
+
+[node name="power_down" type="AudioStreamPlayer" parent="Effects"]
+stream = ExtResource("power_down")
+volume_db = 0.0
+
+[node name="fireball" type="AudioStreamPlayer" parent="Effects"]
+stream = ExtResource("fireball")
+volume_db = 0.0
+
+[node name="power_up" type="AudioStreamPlayer" parent="Effects"]
+stream = ExtResource("power_up")
+volume_db = 0.0
+
+[node name="power_up_appears" type="AudioStreamPlayer" parent="Effects"]
+stream = ExtResource("power_up_appears")
+volume_db = 0.0
+
+[node name="death" type="AudioStreamPlayer" parent="Jingles"]
+stream = ExtResource("death")
+volume_db = 0.0
+
+[node name="game_over" type="AudioStreamPlayer" parent="Jingles"]
+stream = ExtResource("game_over")
+volume_db = 0.0
+
+[node name="warning" type="AudioStreamPlayer" parent="Jingles"]
+stream = ExtResource("warning")
+volume_db = 0.0
+
+[node name="stage_clear" type="AudioStreamPlayer" parent="Jingles"]
+stream = ExtResource("stage_clear")
+volume_db = 0.0
+
+[node name="world_clear" type="AudioStreamPlayer" parent="Jingles"]
+stream = ExtResource("world_clear")
+volume_db = 0.0

@@ -4,50 +4,30 @@ extends Node
 signal sound_played(sound: StringName)
 signal jingle_finished
 
-const FILES = {
-	&"jump_small": "smb_jump-small.wav",
-	&"jump_super": "smb_jump-super.wav",
-	&"coin": "smb_coin.wav",
-	&"kick": "smb_kick.wav",
-	&"stomp": "smb_stomp.wav",
-	&"bump": "smb_bump.wav",
-	&"brick_break": "smb_breakblock.wav",
-	&"power_down": "smb_pipe.wav",
-	&"fireball": "smb_fireball.wav",
-	&"death": "smb_mariodie.wav",
-	&"game_over": "smb_gameover.wav",
-	&"warning": "smb_warning.wav",
-	&"stage_clear": "smb_stage_clear.wav",
-	&"world_clear": "smb_world_clear.wav",
-	&"power_up": "smb_powerup.wav",
-	&"power_up_appears": "smb_powerup_appears.wav",
-}
 const JINGLES = [&"death", &"game_over", &"warning", &"stage_clear", &"world_clear"]
 
-@export_range(-40.0, 0.0) var effects_volume_db: float = -8.0
-@export_range(-40.0, 0.0) var jingles_volume_db: float = -8.0
+@export_range(-40.0, 0.0) var effects_volume_db: float = 0.0
+@export_range(-40.0, 0.0) var jingles_volume_db: float = -3.0
 
 var streams: Dictionary[StringName, AudioStream] = {}
 var effect_players: Dictionary[StringName, AudioStreamPlayer] = {}
 
-@onready var jingle: AudioStreamPlayer = $Jingle
+@onready var jingle: AudioStreamPlayer = $Jingles/death
 
 func _ready() -> void:
-	jingle.volume_db = jingles_volume_db
-	jingle.finished.connect(jingle_finished.emit)
-	for sound in FILES:
-		var path = "res://audio/" + FILES[sound]
-		if not ResourceLoader.exists(path):
-			continue
-		streams[sound] = load(path)
-		if sound in JINGLES:
-			continue
-		var channel = AudioStreamPlayer.new()
-		channel.name = String(sound)
-		channel.stream = streams[sound]
+	for channel: AudioStreamPlayer in $Effects.get_children():
+		var sound = StringName(channel.name)
 		channel.volume_db = effects_volume_db
-		add_child(channel)
+		streams[sound] = channel.stream
 		effect_players[sound] = channel
+	for channel: AudioStreamPlayer in $Jingles.get_children():
+		channel.volume_db = jingles_volume_db
+		streams[StringName(channel.name)] = channel.stream
+		channel.finished.connect(jingle_finished.emit)
+	if DisplayServer.get_name() != "headless":
+		print("Áudio do jogo: driver %s, saída %s" % [AudioServer.get_driver_name(), AudioServer.output_device])
+		if AudioServer.get_driver_name() == "Dummy":
+			push_warning("O Godot está usando o driver Dummy, sem saída de som. Verifique o dispositivo de áudio do sistema.")
 
 func play(sound: StringName) -> bool:
 	if not streams.has(sound):
@@ -57,7 +37,7 @@ func play(sound: StringName) -> bool:
 			for channel in effect_players.values():
 				channel.stop()
 		jingle.stop()
-		jingle.stream = streams[sound]
+		jingle = get_node("Jingles/" + String(sound))
 		jingle.play()
 	else:
 		effect_players[sound].play()
@@ -68,9 +48,9 @@ func is_jingle_playing() -> bool:
 	return jingle.playing
 
 func stop_all() -> void:
-	jingle.stop()
-	for channel in effect_players.values():
-		channel.stop()
+	for group in [$Effects, $Jingles]:
+		for channel: AudioStreamPlayer in group.get_children():
+			channel.stop()
 
 func _exit_tree() -> void:
 	stop_all()

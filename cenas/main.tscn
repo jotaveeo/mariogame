@@ -22,6 +22,8 @@
 [ext_resource type="Texture2D" uid="uid://y0f62m5j1lt8" path="res://Tela de Título Pixel Space & Dungeon.png" id="start_banner"]
 [ext_resource type="TileSet" uid="uid://cdwj88hxdh87s" path="res://resources/level_tileset.tres" id="terrain_tiles"]
 
+[ext_resource type="PackedScene" path="res://cenas/level_audio.tscn" id="game_audio"]
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_si04u"]
 size = Vector2(16, 176)
 
@@ -530,3 +532,5 @@ position = Vector2(114, 118)
 
 [node name="Play" type="CollisionShape2D" parent="PlayArea" unique_id=310038017]
 shape = SubResource("RectangleShape2D_kghbt")
+
+[node name="Audio" parent="." instance=ExtResource("game_audio")]

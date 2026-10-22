@@ -30,6 +30,8 @@ func open_level(path: String = "res://cenas/main.tscn") -> void:
 
 func run_checks() -> void:
 	await open_level()
+	check(level.get_node("Audio") == level.audio, "Audio is instantiated directly in the level scene")
+	check(level.audio.get_node("Effects/coin").stream != null, "Coin WAV is bound directly to its AudioStreamPlayer")
 	check(level.audio.streams.size() == 16, "All sixteen downloaded WAV files load")
 	for stream in level.audio.streams.values():
 		check(stream.get_length() > 0, "Imported audio has positive duration")
@@ -44,6 +46,7 @@ func run_checks() -> void:
 	await frames(50)
 	level._collect_coin()
 	check(heard.back() == &"coin", "Coin triggers audio")
+	check(level.audio.effect_players[&"coin"].playing, "Coin event actually starts its AudioStreamPlayer")
 	var manager = level.get_node("MysteryBlockManager")
 	var terrain: TileMapLayer = level.get_node("Terrain")
 	var cell = Vector2i(80, 6)
